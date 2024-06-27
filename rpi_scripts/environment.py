@@ -73,7 +73,7 @@ if __name__ == '__main__':
     
     try:
         while True:
-            data = env.get_data_json()
+            data = env.get_sensor_data_json()
             print(data)
             time.sleep(1)
     except KeyboardInterrupt:
