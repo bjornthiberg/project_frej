@@ -1,12 +1,10 @@
 import time
-from sensors import ICM20948 #Gyroscope/Acceleration/Magnetometer
-from sensors import BME280   #Atmospheric Pressure/Temperature and humidity
-from sensors import LTR390   #UV
-from sensors import TSL2591  #LIGHT
-from sensors import SGP40
+from sensors import BME280   # Atmospheric Pressure/Temperature and humidity
+from sensors import LTR390   # UV
+from sensors import TSL2591  # Light
+from sensors import SGP40    # Air Quality
 import datetime
-from PIL import Image,ImageDraw,ImageFont
-import math
+import logging
 
 class Environment:
     def __init__(self):
@@ -16,7 +14,7 @@ class Environment:
         self.uv = LTR390.LTR390()
         self.air_quality = SGP40.SGP40()
 
-    def get_data(self):        
+    def get_sensor_data(self):        
         reading_time = datetime.datetime.now().isoformat()
         try:
             bme_data = self.atmosphere.readData()
@@ -24,7 +22,7 @@ class Environment:
             temperature = bme_data[1]
             humidity = bme_data[2]
         except Exception as e:
-            print(f"Error reading BME280 data: {e}")
+            logging.error(f"Error reading BME280 data: {e}")
             pressure = None
             temperature = None
             humidity = None
@@ -32,25 +30,25 @@ class Environment:
         try:
             lux = self.light.Lux()
         except Exception as e:
-            print(f"Error reading TSL2591 data: {e}")
+            logging.error(f"Error reading TSL2591 data: {e}")
             lux = None
 
         try:
             uvs = self.uv.UVS()
         except Exception as e:
-            print(f"Error reading LTR390 data: {e}")
+            logging.error(f"Error reading LTR390 data: {e}")
             uvs = None
 
         try:
             gas = self.air_quality.measureRaw(temperature, humidity)
         except Exception as e:
-            print(f"Error reading SGP40 data: {e}")
+            logging.error(f"Error reading SGP40 data: {e}")
             gas = None
 
         return pressure, temperature, humidity, lux, uvs, gas, reading_time
 
-    def get_data_json(self):
-        pressure, temperature, humidity, lux, uvs, gas, reading_time = self.get_data()
+    def get_sensor_data_json(self):
+        pressure, temperature, humidity, lux, uvs, gas, reading_time = self.get_sensor_data()
         return {
             "pressure": pressure,
             "temperature": temperature,
@@ -58,11 +56,27 @@ class Environment:
             "lux": lux,
             "uvs": uvs,
             "gas": gas,
-            "time": reading_time
+            "time": reading_time,
+            "errors": {
+                "pressure": pressure is None,
+                "temperature": temperature is None,
+                "humidity": humidity is None,
+                "lux": lux is None,
+                "uvs": uvs is None,
+                "gas": gas is None
+            }
         }
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     env = Environment()
-    while True:
-        print(env.get_data_json())
-        time.sleep(1)
+    
+    try:
+        while True:
+            data = env.get_data_json()
+            print(data)
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Terminated by user")
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
