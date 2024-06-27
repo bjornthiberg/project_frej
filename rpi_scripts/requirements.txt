@@ -1,2 +1,1 @@
-smbus2
-Pillow
+smbus2==0.4.3
