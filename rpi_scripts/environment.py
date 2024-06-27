@@ -1,18 +1,18 @@
 import time
-from sensors import BME280   # Atmospheric Pressure/Temperature and humidity
-from sensors import LTR390   # UV
-from sensors import TSL2591  # Light
-from sensors import SGP40    # Air Quality
+from rpi_scripts.sensors import BME280   # Atmospheric Pressure/Temperature and humidity
+from rpi_scripts.sensors import LTR390   # UV
+from rpi_scripts.sensors import TSL2591  # Light
+from rpi_scripts.sensors import SGP40    # Air Quality
 import datetime
 import logging
 
 class Environment:
     def __init__(self):
-        self.atmosphere = BME280.BME280()
+        self.atmosphere = BME280()
         self.atmosphere.get_calib_param()
-        self.light = TSL2591.TSL2591()
-        self.uv = LTR390.LTR390()
-        self.air_quality = SGP40.SGP40()
+        self.light = TSL2591()
+        self.uv = LTR390()
+        self.air_quality = SGP40()
 
     def get_sensor_data(self):        
         reading_time = datetime.datetime.now().isoformat()
