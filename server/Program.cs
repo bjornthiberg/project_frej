@@ -1,21 +1,40 @@
 using project_frej.Models;
-using Microsoft.Extensions.Logging;
+using project_frej.Data;
+
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<SensorDataContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
 
 app.MapGet("/", () => "API for Project Frej");
 
-app.MapPost("/api/sensorData", (SensorReading sensorReading, ILogger<Program> logger) =>
+app.MapGet("/api/sensorData/{id}", async (int id, SensorDataContext db, ILogger<Program> logger) =>
+{
+    var sensorReading = await db.SensorReadings.FindAsync(id);
+    if (sensorReading == null)
+    {
+        logger.LogWarning("SensorReading with ID {Id} not found", id);
+        return Results.NotFound();
+    }
+
+    logger.LogInformation("SensorReading with ID {Id} provided", id);
+    return Results.Ok(sensorReading);
+});
+
+app.MapPost("/api/sensorData", async (SensorReading sensorReading, ILogger<Program> logger, SensorDataContext db) =>
 {
     logger.LogInformation("Received sensor data: {sensorReading}", sensorReading);
 
-    // TODO: Add logic to save the sensor data to the database
-
     try
     {
-        // Simulate data processing
-        return Results.Ok(sensorReading);
+        db.SensorReadings.Add(sensorReading);
+        await db.SaveChangesAsync();
+
+        return Results.Created($"/api/sensorData/{sensorReading.Id}", sensorReading);
     }
     catch (Exception ex)
     {
