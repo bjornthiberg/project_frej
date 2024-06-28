@@ -1,10 +1,13 @@
 import time
-from rpi_scripts.sensors import BME280   # Atmospheric Pressure/Temperature and humidity
-from rpi_scripts.sensors import LTR390   # UV
+from rpi_scripts.sensors import BME280  # Atmospheric Pressure/Temperature and humidity
+from rpi_scripts.sensors import LTR390  # UV
 from rpi_scripts.sensors import TSL2591  # Light
-from rpi_scripts.sensors import SGP40    # Air Quality
+from rpi_scripts.sensors import SGP40  # Air Quality
 import datetime
 import logging
+
+logger = logging.getLogger(__name__)
+
 
 class Environment:
     def __init__(self):
@@ -14,7 +17,7 @@ class Environment:
         self.uv = LTR390()
         self.air_quality = SGP40()
 
-    def get_sensor_data(self):        
+    def get_sensor_data(self):
         reading_time = datetime.datetime.now().isoformat()
         try:
             bme_data = self.atmosphere.readData()
@@ -48,7 +51,9 @@ class Environment:
         return pressure, temperature, humidity, lux, uvs, gas, reading_time
 
     def get_sensor_data_json(self):
-        pressure, temperature, humidity, lux, uvs, gas, reading_time = self.get_sensor_data()
+        pressure, temperature, humidity, lux, uvs, gas, reading_time = (
+            self.get_sensor_data()
+        )
         return {
             "pressure": pressure,
             "temperature": temperature,
@@ -63,14 +68,14 @@ class Environment:
                 "humidity": humidity is None,
                 "lux": lux is None,
                 "uvs": uvs is None,
-                "gas": gas is None
-            }
+                "gas": gas is None,
+            },
         }
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+
+if __name__ == "__main__":
     env = Environment()
-    
+
     try:
         while True:
             data = env.get_sensor_data_json()
