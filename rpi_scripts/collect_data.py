@@ -40,7 +40,7 @@ def insert_reading(data):
             lux=data["lux"],
             uvs=data["uvs"],
             gas=data["gas"],
-            timestamp=data["time"],
+            timestamp=data["timestamp"],
         )
         logging.info("Data inserted successfully")
     except Exception as e:
