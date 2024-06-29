@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 def post_sensor_reading(data, API_URL, API_PORT, API_KEY):
-    headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"{API_KEY}", "Content-Type": "application/json"}
 
     try:
         response = requests.post(

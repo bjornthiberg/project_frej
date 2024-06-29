@@ -1,7 +1,9 @@
 using project_frej.Models;
 using project_frej.Data;
+using project_frej.Middleware;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,8 @@ builder.Services.AddDbContext<SensorDataContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
+
+app.UseMiddleware<ApiKeyPostMiddleware>();
 
 app.MapGet("/", () => "API for Project Frej");
 
