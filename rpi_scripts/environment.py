@@ -61,7 +61,7 @@ class Environment:
             "lux": lux,
             "uvs": uvs,
             "gas": gas,
-            "time": reading_time,
+            "timestamp": reading_time,
             "errors": {
                 "pressure": pressure is None,
                 "temperature": temperature is None,
