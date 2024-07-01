@@ -10,5 +10,7 @@ namespace project_frej.Data
         {
         }
         public DbSet<SensorReading> SensorReadings { get; set; }
+        public DbSet<SensorReadingHourly> SensorReadingsHourly { get; set; }
+        public DbSet<SensorReadingDaily> SensorReadingsDaily { get; set; }
     }
 }
