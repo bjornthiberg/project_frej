@@ -14,7 +14,16 @@ builder.Services.AddDbContext<SensorDataContext>(options =>
 builder.Services.AddScoped<AggregationService>();
 builder.Services.AddHostedService<AggregationHostedService>();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseMiddleware<ApiKeyPostMiddleware>();
 
