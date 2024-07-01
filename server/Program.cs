@@ -1,6 +1,7 @@
 using project_frej.Models;
 using project_frej.Data;
 using project_frej.Middleware;
+using project_frej.Services;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<SensorDataContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<AggregationService>();
+builder.Services.AddHostedService<AggregationHostedService>();
 
 var app = builder.Build();
 
