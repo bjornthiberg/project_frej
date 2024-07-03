@@ -1,5 +1,16 @@
-function App() {
-  return (<><p>Project Frej</p></>)
-}
+import React from 'react';
+import { CssBaseline } from '@mui/material';
 
-export default App
+import HomePage from './pages/HomePage';
+import './App.css';
+
+export default function App() {
+  return (
+    <React.Fragment>
+      <CssBaseline />
+      <div className="App">
+        <HomePage />
+      </div>
+    </React.Fragment>
+  );
+}
