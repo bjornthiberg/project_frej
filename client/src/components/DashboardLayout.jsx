@@ -25,6 +25,8 @@ const DashboardLayout = () => {
     { label: 'Humidity (%RG)', value: 'humidity' },
     { label: 'Pressure (hPa)', value: 'pressure' },
     { label: 'Lux', value: 'lux' },
+    { label: 'UV (nm)', value: 'uvs' },
+    { label: 'Gas Particles (ppm)', value: 'gas' },
   ];
 
   return (

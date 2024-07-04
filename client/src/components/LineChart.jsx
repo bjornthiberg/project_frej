@@ -10,7 +10,7 @@ const LineChart = ({ data, selectedOption }) => {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
-      hour12: false, // Use 24-hour format
+      hour12: false,
     })
   );
 
@@ -23,6 +23,8 @@ const LineChart = ({ data, selectedOption }) => {
           pressure: 'Pressure (hPa)',
           humidity: 'Humidity (%RG)',
           lux: 'Lux',
+          uvs: 'UV (nm)',
+          gas: 'Gas Particles (ppm)'
         }[selectedOption],
         data: data.map((entry) => entry[selectedOption]),
         fill: false,
@@ -31,12 +33,16 @@ const LineChart = ({ data, selectedOption }) => {
           pressure: 'rgb(54, 162, 235)',
           humidity: 'rgb(75, 192, 192)',
           lux: 'rgb(153, 102, 255)',
+          uvs: 'rgb(255, 205, 86)',
+          gas: 'rgb(255, 159, 64)',
         }[selectedOption],
         borderColor: {
           temperature: 'rgba(255, 99, 132, 0.2)',
           pressure: 'rgba(54, 162, 235, 0.2)',
           humidity: 'rgba(75, 192, 192, 0.2)',
           lux: 'rgba(153, 102, 255, 0.2)',
+          uvs: 'rgba(255, 205, 86, 0.2)',
+          gas: 'rgba(255, 159, 64, 0.2)',
         }[selectedOption],
       },
     ],
@@ -48,7 +54,7 @@ const LineChart = ({ data, selectedOption }) => {
     scales: {
       x: {
         ticks: {
-          maxTicksLimit: 10, // Show fewer labels
+          maxTicksLimit: 10,
         },
       },
       y: {

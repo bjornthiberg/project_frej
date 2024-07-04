@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 const PageSizeSelector = ({ pageSize, onPageSizeChange }) => {
     return (
@@ -11,10 +11,9 @@ const PageSizeSelector = ({ pageSize, onPageSizeChange }) => {
                 onChange={onPageSizeChange}
                 label="Number of Items"
             >
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={25}>25</MenuItem>
-                <MenuItem value={50}>50</MenuItem>
-                <MenuItem value={100}>100</MenuItem>
+                {[10, 25, 50, 100, 250, 500].map(size => (
+                    <MenuItem key={size} value={size}>{size}</MenuItem>
+                ))}
             </Select>
         </FormControl>
     );
