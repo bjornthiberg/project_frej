@@ -4,7 +4,7 @@ import DataRetrieval from './DataRetrieval';
 import PageSizeSelector from './PageSizeSelector';
 
 const ChartSelector = ({ options, selectedOption, handleChange, pageSize, handlePageSizeChange }) => {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  const baseUrl = 'https://frejapi.thiberg.dev/api';
 
   return (
     <div>
