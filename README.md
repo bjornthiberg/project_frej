@@ -13,6 +13,10 @@ Project Frej is a project built using Python, ASP.NET Core, SQLite and a [TBD] f
 
 A blog detailing the development process for personal sake can be found [here](https://bjornthiberg.github.io/project_frej), hosted on GitHub pages, in this repo.
 
+## Licenses
+This project uses third-party libraries, each of which may have its own license terms. The list of licenses for these libraries can be found in the [LICENSES.md](./LICENSES.md) file.
+
 ## License
-See separate [LICENSE](LICENSE.txt) file
+
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE.txt) file for more details.
 
