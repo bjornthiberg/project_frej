@@ -11,7 +11,9 @@ const Navbar = () => {
   return (
     <AppBar position="static" sx={{ borderRadius: 0 }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box component="img" src={Logo} alt="Logo" sx={{ height: 40 }} />
+        <Link href="/" sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box component="img" src={Logo} alt="Logo" sx={{ height: 40 }} />
+        </Link>
         <Typography variant="h5" sx={{ flexGrow: 1, textAlign: 'center', fontWeight: 'bold' }}>
           Project Frej Dashboard
         </Typography>
