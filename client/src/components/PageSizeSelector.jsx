@@ -1,19 +1,20 @@
 import React from 'react';
-import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
 const PageSizeSelector = ({ pageSize, onPageSizeChange }) => {
     return (
         <FormControl variant="outlined" size="small" style={{ minWidth: 120, marginRight: '20px' }}>
-            <InputLabel id="page-size-select-label">Page Size</InputLabel>
+            <InputLabel id="page-size-select-label">Number of Items</InputLabel>
             <Select
                 labelId="page-size-select-label"
                 value={pageSize}
                 onChange={onPageSizeChange}
-                label="Page Size"
+                label="Number of Items"
             >
-                {[10, 25, 50, 100, 250, 500].map(size => (
-                    <MenuItem key={size} value={size}>{size}</MenuItem>
-                ))}
+                <MenuItem value={10}>10</MenuItem>
+                <MenuItem value={25}>25</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
             </Select>
         </FormControl>
     );

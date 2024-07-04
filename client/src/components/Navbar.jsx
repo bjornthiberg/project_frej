@@ -11,12 +11,17 @@ const Navbar = () => {
   return (
     <AppBar position="static" sx={{ borderRadius: 0 }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Link href="/" sx={{ display: 'flex', alignItems: 'center' }}>
+        <Link href="/" sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
           <Box component="img" src={Logo} alt="Logo" sx={{ height: 40 }} />
         </Link>
-        <Typography variant="h5" sx={{ flexGrow: 1, textAlign: 'center', fontWeight: 'bold' }}>
-          Project Frej Dashboard
-        </Typography>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+            Project Frej Dashboard
+          </Typography>
+          <Typography variant="subtitle2" sx={{ color: '#5c5c5c' }}>
+            RPi Sensor Data Monitoring
+          </Typography>
+        </Box>
         <Link href="https://github.com/bjornthiberg/project_frej" target="_blank" rel="noopener" sx={{ color: 'inherit' }}>
           <GitHubIcon sx={{ fontSize: 30 }} />
         </Link>

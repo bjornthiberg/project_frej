@@ -11,12 +11,12 @@ const ChartSelector = ({ options, selectedOption, handleChange, pageSize, handle
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <FormControl variant="outlined" size="small" style={{ minWidth: 120, marginRight: '20px' }}>
-            <InputLabel id="chart-select-label">Select</InputLabel>
+            <InputLabel id="chart-select-label">Data Type</InputLabel>
             <Select
               labelId="chart-select-label"
               value={selectedOption}
               onChange={handleChange}
-              label="Select"
+              label="Data Type"
             >
               {options.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
