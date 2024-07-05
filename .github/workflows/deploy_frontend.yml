@@ -1,11 +1,12 @@
-name: Deploy static content to Pages
+name: Deploy React Frontend to GitHub Pages
 
 on:
   push:
     branches:
-      - 'gh-pages'
+      - 'main'
+    paths:
+      - client/**
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 permissions:
@@ -13,7 +14,6 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
 concurrency:
   group: 'pages'
   cancel-in-progress: true
