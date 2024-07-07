@@ -35,6 +35,14 @@ namespace project_frej.Middleware
 
             var apiKey = configuration.GetValue<string>("ApiKey");
 
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                _logger.LogWarning("API Key configuration missing. Add to appsettings.json.");
+                context.Response.StatusCode = 500;
+                await context.Response.WriteAsync("Internal server error.");
+                return;
+            }
+
             if (!apiKey.Equals(extractedApiKey))
             {
                 _logger.LogWarning("Unauthorized client.");
