@@ -17,6 +17,31 @@ builder.Services.AddHostedService<AggregationHostedService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("CorsPolicy", policyBuilder =>
+        {
+            policyBuilder.AllowAnyOrigin()
+                         .AllowAnyMethod()
+                         .AllowAnyHeader();
+        });
+    });
+}
+else
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("CorsPolicy", policyBuilder =>
+        {
+            policyBuilder.WithOrigins("https://thiberg.dev")
+                         .WithMethods("GET")
+                         .AllowAnyHeader();
+        });
+    });
+}
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -26,6 +51,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ApiKeyPostMiddleware>();
+
+app.UseCors("FrontEndPolicy");
 
 app.MapGet("/", () => "API for Project Frej");
 
