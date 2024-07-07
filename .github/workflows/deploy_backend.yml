@@ -47,6 +47,11 @@ jobs:
         ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
       shell: bash
 
+    - name: Create deployment directory on server
+      run: |
+        ssh -i $HOME/private_key root@${{ secrets.SERVER_IP }} 'mkdir -p /var/www/project_frej_temp'
+      shell: bash
+
     - name: Copy files to server
       run: |
         scp -i $HOME/private_key -r ./server/out/* root@${{ secrets.SERVER_IP }}:/var/www/project_frej_temp
@@ -59,7 +64,7 @@ jobs:
 
     - name: Replace old backend with new version
       run: |
-        ssh -i $HOME/private_key root@${{ secrets.SERVER_IP }} 'rm -rf /var/www/project_frej_old && mv /var/www/project_frej /var/www/project_frej_old && mv /var/www/project_frej_temp /var/www/project_frej'
+        ssh -i $HOME/private_key root@${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'rm -rf /var/www/project_frej_old && mv /var/www/project_frej /var/www/project_frej_old && mv /var/www/project_frej_temp /var/www/project_frej'
       shell: bash
 
     - name: Restart backend service
