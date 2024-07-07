@@ -21,15 +21,19 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
+      working-directory: ./server
 
     - name: Build
       run: dotnet build --no-restore
+      working-directory: ./server
 
     - name: Test
       run: dotnet test --no-build --verbosity normal
+      working-directory: ./server
 
     - name: Publish
       run: dotnet publish --configuration Release --output ./out
+      working-directory: ./server
 
     - name: Prepare SSH Key
       run: |
@@ -39,7 +43,7 @@ jobs:
 
     - name: Copy files to server
       run: |
-        scp -i private_key -r ./out/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/project_frej_temp
+        scp -i private_key -r ./server/out/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/project_frej_temp
       shell: bash
 
     - name: Backup existing database
