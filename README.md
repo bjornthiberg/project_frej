@@ -69,5 +69,3 @@ This project uses third-party libraries, each of which may have its own license 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE.txt) file for more details.
-
-Testing CI pipeline
