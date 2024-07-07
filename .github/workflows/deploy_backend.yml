@@ -1,0 +1,80 @@
+name: Deploy ASP.NET Core Backend
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - client/**
+    
+  workflow_dispatch:
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./server
+
+    - name: Build
+      run: dotnet build --no-restore
+      working-directory: ./server
+
+    - name: Test
+      run: dotnet test
+      working-directory: ./tests/serverTests
+
+    - name: Publish
+      run: dotnet publish --configuration Release --output ./out
+      working-directory: ./server
+
+    - name: Prepare SSH Key
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/private_key
+        chmod 600 $HOME/private_key
+      shell: bash
+
+    - name: Add server to known hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+      shell: bash
+
+    - name: Create deployment directory on server
+      run: |
+        ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'mkdir -p /var/www/project_frej_temp'
+      shell: bash
+
+    - name: Copy files to server
+      run: |
+        scp -i $HOME/private_key -r ./server/out/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/project_frej_temp
+      shell: bash
+
+    - name: Backup existing database
+      run: |
+        ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'cp /var/www/project_frej/sensor_data.db /var/www/project_frej_temp/sensor_data.db'
+      shell: bash
+
+    - name: Replace old backend with new version
+      run: |
+        ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'rm -rf /var/www/project_frej_old && mv /var/www/project_frej /var/www/project_frej_old && mv /var/www/project_frej_temp /var/www/project_frej'
+      shell: bash
+
+    - name: Restart backend service
+      run: |
+        ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'sudo systemctl restart project_frej.service'
+      shell: bash
+
+    - name: Cleanup
+      run: rm -f $HOME/private_key
+      shell: bash
