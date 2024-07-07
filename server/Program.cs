@@ -52,7 +52,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ApiKeyPostMiddleware>();
 
-app.UseCors("FrontEndPolicy");
+app.UseCors("CorsPolicy");
 
 app.MapGet("/", () => "API for Project Frej");
 
