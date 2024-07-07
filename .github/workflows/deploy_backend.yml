@@ -28,7 +28,7 @@ jobs:
       working-directory: ./server
 
     - name: Test
-      run: dotnet test --verbosity normal
+      run: dotnet test
       working-directory: ./tests/serverTests
 
     - name: Publish
