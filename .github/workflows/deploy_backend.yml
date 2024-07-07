@@ -2,9 +2,9 @@ name: Deploy ASP.NET Core Backend
 
 on:
   push:
-    branches: [ "main", "test_deploy"]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main", "test_deploy"]
+    branches: [ "main" ]
 
 jobs:
   build:
