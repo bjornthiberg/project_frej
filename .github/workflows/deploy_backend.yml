@@ -49,24 +49,24 @@ jobs:
 
     - name: Copy files to server
       run: |
-        scp -i private_key -r ./server/out/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/project_frej_temp
+        scp -i $HOME/private_key -r ./server/out/* root@${{ secrets.SERVER_IP }}:/var/www/project_frej_temp
       shell: bash
 
     - name: Backup existing database
       run: |
-        ssh -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'cp /var/www/project_frej/sensor_data.db /var/www/project_frej_temp/sensor_data.db'
+        ssh -i $HOME/private_key root@${{ secrets.SERVER_IP }} 'cp /var/www/project_frej/sensor_data.db /var/www/project_frej_temp/sensor_data.db'
       shell: bash
 
     - name: Replace old backend with new version
       run: |
-        ssh -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'rm -rf /var/www/project_frej_old && mv /var/www/project_frej /var/www/project_frej_old && mv /var/www/project_frej_temp /var/www/project_frej'
+        ssh -i $HOME/private_key root@${{ secrets.SERVER_IP }} 'rm -rf /var/www/project_frej_old && mv /var/www/project_frej /var/www/project_frej_old && mv /var/www/project_frej_temp /var/www/project_frej'
       shell: bash
 
     - name: Restart backend service
       run: |
-        ssh -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'sudo systemctl restart project_frej.service'
+        ssh -i $HOME/private_key root@${{ secrets.SERVER_IP }} 'sudo systemctl restart project_frej.service'
       shell: bash
 
     - name: Cleanup
-      run: rm -f private_key
+      run: rm -f $HOME/private_key
       shell: bash
