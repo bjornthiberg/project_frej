@@ -15,8 +15,10 @@ const DataRetrieval = ({ endpoint, selectedOption, pageSize }) => {
             try {
                 setLoading(true);
                 setError(null);
-                const response = await axios.get(endpoint);
-                const sensorData = response.data.data.slice(-pageSize); // Get the latest {pageSize} number of data points
+
+                const response = await axios.get(`${endpoint}/latest?pageSize=${pageSize}`);
+                const sensorData = response.data.data;
+
                 setData(sensorData);
             } catch (error) {
                 console.error('Error fetching data:', error);
