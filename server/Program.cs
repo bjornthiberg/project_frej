@@ -83,6 +83,25 @@ app.MapGet("/api/sensorData", async (SensorDataContext context, int pageNumber =
     return Results.Ok(response);
 });
 
+app.MapGet("/api/sensorData/latest", async (SensorDataContext context, int pageSize = 100) =>
+{
+    var totalRecords = await context.SensorReadings.CountAsync();
+
+    var sensorReadings = await context.SensorReadings
+        .OrderByDescending(sr => sr.Timestamp)
+        .Take(pageSize)
+        .ToListAsync();
+
+    var response = new
+    {
+        TotalRecords = totalRecords,
+        PageSize = pageSize,
+        Data = sensorReadings.OrderBy(sr => sr.Timestamp)
+    };
+
+    return Results.Ok(response);
+});
+
 app.MapPost("/api/sensorData", async (SensorReading sensorReading, ILogger<Program> logger, SensorDataContext db) =>
 {
     logger.LogInformation("Received sensor data: {sensorReading}", sensorReading);
