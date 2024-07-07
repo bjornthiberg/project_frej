@@ -29,7 +29,7 @@ jobs:
 
     - name: Test
       run: dotnet test --no-build --verbosity normal
-      working-directory: ./server
+      working-directory: ./tests/serverTests
 
     - name: Publish
       run: dotnet publish --configuration Release --output ./out
@@ -40,6 +40,11 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
         chmod 600 private_key
       shell: bash
+
+    - name: Start SSH Agent and Add Key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
     - name: Copy files to server
       run: |
