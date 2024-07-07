@@ -1,0 +1,66 @@
+name: Deploy ASP.NET Core Backend
+
+on:
+  push:
+    branches: [ "main", "test_deploy"]
+  pull_request:
+    branches: [ "main", "test_deploy"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./server
+
+    - name: Build
+      run: dotnet build --no-restore
+      working-directory: ./server
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+      working-directory: ./server
+
+    - name: Publish
+      run: dotnet publish --configuration Release --output ./out
+      working-directory: ./server
+
+    - name: Prepare SSH Key
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
+        chmod 600 private_key
+      shell: bash
+
+    - name: Copy files to server
+      run: |
+        scp -i private_key -r ./server/out/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/project_frej_temp
+      shell: bash
+
+    - name: Backup existing database
+      run: |
+        ssh -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'cp /var/www/project_frej/sensor_data.db /var/www/project_frej_temp/sensor_data.db'
+      shell: bash
+
+    - name: Replace old backend with new version
+      run: |
+        ssh -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'rm -rf /var/www/project_frej_old && mv /var/www/project_frej /var/www/project_frej_old && mv /var/www/project_frej_temp /var/www/project_frej'
+      shell: bash
+
+    - name: Restart backend service
+      run: |
+        ssh -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'sudo systemctl restart project_frej.service'
+      shell: bash
+
+    - name: Cleanup
+      run: rm -f private_key
+      shell: bash
