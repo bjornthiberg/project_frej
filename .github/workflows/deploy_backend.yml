@@ -35,16 +35,16 @@ jobs:
       run: dotnet publish --configuration Release --output ./out
       working-directory: ./server
 
-    - name: Prepare SSH Key
-      run: |
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
-        chmod 600 private_key
-      shell: bash
-
     - name: Start SSH Agent and Add Key
       uses: webfactory/ssh-agent@v0.5.3
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Add server to known hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+      shell: bash
 
     - name: Copy files to server
       run: |
