@@ -70,6 +70,11 @@ jobs:
         ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'rm -rf /var/www/project_frej_old && mv /var/www/project_frej /var/www/project_frej_old && mv /var/www/project_frej_temp /var/www/project_frej'
       shell: bash
 
+    - name: Give www-data ownership of directory
+      run: |
+        ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'chown -R www-data:www-data /var/www/project_frej && chmod -R 775 /var/www/project_frej'
+      shell: bash
+
     - name: Restart backend service
       run: |
         ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'sudo systemctl restart project_frej.service'
