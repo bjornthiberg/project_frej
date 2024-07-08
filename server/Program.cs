@@ -149,3 +149,4 @@ app.MapPost("/api/sensorData", async (SensorReading sensorReading, ILogger<Progr
 
 app.Run();
 
+public partial class Program { }
