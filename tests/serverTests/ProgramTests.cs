@@ -1,62 +1,48 @@
-using System.Net.Http.Json;
-using Xunit;
-using project_frej.Models;
-using Microsoft.AspNetCore.Mvc.Testing;
-using System.Threading.Tasks;
 using System.Net;
-using project_frej.Tests.TestUtils;
+using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
+using project_frej.Models;
+using project_frej.Tests.TestUtils;
 
 namespace project_frej.Tests.ProgramTests
 {
-    public class SensorDataApiTests : IClassFixture<CustomWebApplicationFactory>
+    public class SensorDataApiTests(CustomWebApplicationFactory factory) : IClassFixture<CustomWebApplicationFactory>
     {
-        private readonly HttpClient _client;
+        private readonly HttpClient _client = factory.CreateClient();
 
-        public SensorDataApiTests(CustomWebApplicationFactory factory)
-        {
-            _client = factory.CreateClient();
-            _client.DefaultRequestHeaders.Add("ApiKey", "testing");
-        }
         [Fact]
         public async Task Get_SensorData_ReturnsOk()
         {
-            // Act
             var response = await _client.GetAsync("/api/sensorData");
-
-            // Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            response.EnsureSuccessStatusCode();
             var responseData = await response.Content.ReadFromJsonAsync<object>();
+
             Assert.NotNull(responseData);
         }
 
         [Fact]
         public async Task Get_SensorDataById_ReturnsOk()
         {
-            // Act
             var response = await _client.GetAsync("/api/sensorData/1");
 
-            // Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            response.EnsureSuccessStatusCode();
             var responseData = await response.Content.ReadFromJsonAsync<object>();
-            Console.WriteLine(responseData);
+
             Assert.NotNull(responseData);
         }
 
         [Fact]
         public async Task Get_SensorDataById_ReturnsNotFound()
         {
-            // Act
             var response = await _client.GetAsync("/api/sensorData/1000000");
 
-            // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
-        public async Task Post_SensorData_ReturnsCreated()
+        public async Task Post_ValidSensorData_ReturnsOk()
         {
-            // Arrange
             var sensorReading = new SensorReading
             {
                 Pressure = 200,
@@ -65,24 +51,43 @@ namespace project_frej.Tests.ProgramTests
                 Lux = 300,
                 Uvs = 1,
                 Gas = 10,
-                Timestamp = new System.DateTime(1998, 7, 16)
+                Timestamp = new DateTime(1998, 7, 16)
             };
 
-            // add api key as "Authorization" header
             _client.DefaultRequestHeaders.Add("Authorization", "testing");
 
-            // Act
             var response = await _client.PostAsJsonAsync("/api/sensorData", sensorReading);
 
-            // Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Post_InvalidSensorData_ReturnsInternalServerError()
+        {
+            var invalidSensorReadingJson = @"
+            {
+                ""Pressure"": ""shouldnotbeastring"",
+                ""Temperature"": 20,
+                ""Humidity"": 50,
+                ""Lux"": 300,
+                ""Uvs"": 1,
+                ""Gas"": 10,
+                ""Timestamp"": ""1998-07-16T00:00:00""
+            }";
+
+            var content = new StringContent(invalidSensorReadingJson, Encoding.UTF8, "application/json");
+
+            _client.DefaultRequestHeaders.Add("Authorization", "testing");
+
+            var response = await _client.PostAsync("/api/sensorData", content);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]
         public async Task Get_SensorDataLatest_ReturnsOk()
         {
-            // Post a new sensor reading
             var sensorReading = new SensorReading
             {
                 Pressure = 2000,
@@ -96,24 +101,37 @@ namespace project_frej.Tests.ProgramTests
             _client.DefaultRequestHeaders.Add("Authorization", "testing");
             await _client.PostAsJsonAsync("/api/sensorData", sensorReading);
 
-            // Act
             var response = await _client.GetAsync("/api/sensorData/latest?pageSize=1");
 
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
+            response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();
             var responseData = JsonDocument.Parse(responseString).RootElement;
 
-            // Extract the data part from the response
             var data = responseData.GetProperty("data").EnumerateArray().First();
 
-            // Verify the data
             Assert.Equal(sensorReading.Pressure, data.GetProperty("pressure").GetDouble());
             Assert.Equal(sensorReading.Temperature, data.GetProperty("temperature").GetDouble());
             Assert.Equal(sensorReading.Humidity, data.GetProperty("humidity").GetDouble());
             Assert.Equal(sensorReading.Lux, data.GetProperty("lux").GetDouble());
             Assert.Equal(sensorReading.Uvs, data.GetProperty("uvs").GetDouble());
             Assert.Equal(sensorReading.Gas, data.GetProperty("gas").GetDouble());
+        }
+
+        [Fact]
+        public async Task Get_SensorDataAggregateHourly_ReturnsNotFound()
+        {
+            var response = await _client.GetAsync("/api/sensorData/aggregate/hourly");
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Get_SensorDataAggregateDaily_ReturnsNotFound()
+        {
+            var response = await _client.GetAsync("/api/sensorData/aggregate/daily");
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }
