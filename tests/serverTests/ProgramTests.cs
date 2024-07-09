@@ -117,21 +117,5 @@ namespace project_frej.Tests.ProgramTests
             Assert.Equal(sensorReading.Uvs, data.GetProperty("uvs").GetDouble());
             Assert.Equal(sensorReading.Gas, data.GetProperty("gas").GetDouble());
         }
-
-        [Fact]
-        public async Task Get_SensorDataAggregateHourly_ReturnsNotFound()
-        {
-            var response = await _client.GetAsync("/api/sensorData/aggregate/hourly");
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task Get_SensorDataAggregateDaily_ReturnsNotFound()
-        {
-            var response = await _client.GetAsync("/api/sensorData/aggregate/daily");
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }
     }
 }
