@@ -39,7 +39,7 @@ public class SensorDataController(SensorDataContext context, ILogger<SensorDataC
         return hourlyAggregates.Count != 0 ? Ok(hourlyAggregates) : NotFound();
     }
 
-    [HttpGet("aggregated/daily/{date}")]
+    [HttpGet("aggregate/daily/{date}")]
     public async Task<IActionResult> GetSensorDataDaily(DateTime date)
     {
         var dailyAggregates = await context.SensorReadingsDaily
