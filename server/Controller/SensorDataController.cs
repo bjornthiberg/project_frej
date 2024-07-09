@@ -49,26 +49,6 @@ public class SensorDataController(SensorDataContext context, ILogger<SensorDataC
         return dailyAggregates.Count != 0 ? Ok(dailyAggregates) : NotFound();
     }
 
-
-    [HttpGet("latest")]
-    public async Task<IActionResult> GetLatestSensorData([FromQuery] int pageSize = 100)
-    {
-        var totalRecords = await context.SensorReadings.CountAsync();
-
-        var sensorReadings = await context.SensorReadings
-            .OrderByDescending(sr => sr.Timestamp)
-            .Take(pageSize)
-            .ToListAsync();
-
-        var response = new
-        {
-            TotalRecords = totalRecords,
-            Data = sensorReadings
-        };
-
-        return Ok(response);
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetSensorData([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
     {
@@ -76,7 +56,7 @@ public class SensorDataController(SensorDataContext context, ILogger<SensorDataC
         var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
 
         var sensorReadings = await context.SensorReadings
-            .OrderBy(sr => sr.Timestamp)
+            .OrderByDescending(sr => sr.Timestamp)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
