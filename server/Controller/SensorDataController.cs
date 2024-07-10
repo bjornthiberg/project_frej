@@ -73,7 +73,18 @@ public class SensorDataController(ISensorDataRepository sensorDataRepository, IL
     {
         try
         {
-            return Ok(await sensorDataRepository.GetPagedAsync(pageNumber, pageSize));
+            var result = await sensorDataRepository.GetPagedAsync(pageNumber, pageSize);
+
+            var response = new
+            {
+                result.TotalRecords,
+                result.TotalPages,
+                result.CurrentPage,
+                result.PageSize,
+                result.Data
+            };
+
+            return Ok(response);
         }
         catch (ArgumentNullException) // ToListAsync throws ArgumentNullException if no data is found
         {
