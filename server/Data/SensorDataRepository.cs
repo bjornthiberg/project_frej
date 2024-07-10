@@ -5,11 +5,9 @@ namespace project_frej.Data;
 
 public class SensorDataRepository(SensorDataContext context) : ISensorDataRepository
 {
-    private readonly SensorDataContext _context = context;
-
     public async Task<IEnumerable<SensorReading>> GetByIdAsync(int id)
     {
-        return await _context.SensorReadings
+        return await context.SensorReadings
             .Where(s => s.Id == id)
             .AsNoTracking()
             .ToListAsync();
@@ -17,7 +15,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
 
     public async Task<IEnumerable<SensorReadingHourly>> GetAggregateHourlyAsync(DateTime date, int hour)
     {
-        return await _context.SensorReadingsHourly
+        return await context.SensorReadingsHourly
             .Where(ha => ha.Hour.Date == date.Date && ha.Hour.Hour == hour)
             .AsNoTracking()
             .ToListAsync();
@@ -25,7 +23,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
 
     public async Task<IEnumerable<SensorReadingDaily>> GetAggregateDailyAsync(DateTime date)
     {
-        return await _context.SensorReadingsDaily
+        return await context.SensorReadingsDaily
             .Where(da => da.Date == date.Date)
             .AsNoTracking()
             .ToListAsync();
@@ -33,10 +31,10 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
 
     public async Task<(int TotalRecords, int TotalPages, int CurrentPage, int PageSize, List<SensorReading> Data)> GetPagedAsync(int pageNumber, int pageSize)
     {
-        var totalRecords = await _context.SensorReadings.CountAsync();
+        var totalRecords = await context.SensorReadings.CountAsync();
         var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
 
-        var sensorReadings = await _context.SensorReadings
+        var sensorReadings = await context.SensorReadings
             .OrderByDescending(sr => sr.Timestamp)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -48,8 +46,8 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
 
     public async Task<IEnumerable<SensorReading>> AddAsync(SensorReading sensorReading)
     {
-        _context.SensorReadings.Add(sensorReading);
-        await _context.SaveChangesAsync();
+        context.SensorReadings.Add(sensorReading);
+        await context.SaveChangesAsync();
         return await GetByIdAsync(sensorReading.Id);
     }
 }
