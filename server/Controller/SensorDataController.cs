@@ -21,6 +21,10 @@ public class SensorDataController(ISensorDataRepository repository, ILogger<Sens
         {
             return Ok(await repository.GetSensorDataByIdAsync(id));
         }
+        catch (ArgumentNullException) // ToListAsync throws ArgumentNullException if no data is found
+        {
+            return NotFound();
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error while fetching sensor data by id");
@@ -35,9 +39,13 @@ public class SensorDataController(ISensorDataRepository repository, ILogger<Sens
         {
             return Ok(await repository.GetSensorDataAggregateHourlyAsync(date, hour));
         }
+        catch (ArgumentNullException) // ToListAsync throws ArgumentNullException if no data is found
+        {
+            return NotFound();
+        }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error while fetching hourly sensor data");
+            logger.LogError(ex, "Error while fetching hourly sensor data for {Date} and {Hour}", date, hour);
             return Problem("Error while fetching hourly sensor data", statusCode: 500);
         }
     }
@@ -49,9 +57,13 @@ public class SensorDataController(ISensorDataRepository repository, ILogger<Sens
         {
             return Ok(await repository.GetSensorDataAggregateDailyAsync(date));
         }
+        catch (ArgumentNullException) // ToListAsync throws ArgumentNullException if no data is found
+        {
+            return NotFound();
+        }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error while fetching daily sensor data");
+            logger.LogError(ex, "Error while fetching daily sensor data for {Date}", date);
             return Problem("Error while fetching daily sensor data", statusCode: 500);
         }
     }
@@ -63,9 +75,13 @@ public class SensorDataController(ISensorDataRepository repository, ILogger<Sens
         {
             return Ok(await repository.GetSensorDataPagedAsync(pageNumber, pageSize));
         }
+        catch (ArgumentNullException) // ToListAsync throws ArgumentNullException if no data is found
+        {
+            return NotFound();
+        }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error while fetching paged sensor data");
+            logger.LogError(ex, "Error while fetching paged sensor data for page {PageNumber} and page size {PageSize}", pageNumber, pageSize);
             return Problem("Error while fetching paged sensor data", statusCode: 500);
         }
     }
@@ -80,7 +96,7 @@ public class SensorDataController(ISensorDataRepository repository, ILogger<Sens
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error while adding sensor data");
+            logger.LogError(ex, "Error while adding sensor data {SensorReading}", sensorReading);
             return Problem("Error while adding sensor data", statusCode: 500);
         }
     }
