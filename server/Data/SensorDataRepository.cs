@@ -7,7 +7,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
 {
     private readonly SensorDataContext _context = context;
 
-    public async Task<IEnumerable<SensorReading>> GetSensorDataByIdAsync(int id)
+    public async Task<IEnumerable<SensorReading>> GetByIdAsync(int id)
     {
         return await _context.SensorReadings
             .Where(s => s.Id == id)
@@ -15,7 +15,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<SensorReadingHourly>> GetSensorDataAggregateHourlyAsync(DateTime date, int hour)
+    public async Task<IEnumerable<SensorReadingHourly>> GetAggregateHourlyAsync(DateTime date, int hour)
     {
         return await _context.SensorReadingsHourly
             .Where(ha => ha.Hour.Date == date.Date && ha.Hour.Hour == hour)
@@ -23,7 +23,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<SensorReadingDaily>> GetSensorDataAggregateDailyAsync(DateTime date)
+    public async Task<IEnumerable<SensorReadingDaily>> GetAggregateDailyAsync(DateTime date)
     {
         return await _context.SensorReadingsDaily
             .Where(da => da.Date == date.Date)
@@ -31,7 +31,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
             .ToListAsync();
     }
 
-    public async Task<(int TotalRecords, int TotalPages, int CurrentPage, int PageSize, List<SensorReading> Data)> GetSensorDataPagedAsync(int pageNumber, int pageSize)
+    public async Task<(int TotalRecords, int TotalPages, int CurrentPage, int PageSize, List<SensorReading> Data)> GetPagedAsync(int pageNumber, int pageSize)
     {
         var totalRecords = await _context.SensorReadings.CountAsync();
         var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
@@ -46,11 +46,11 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
         return (totalRecords, totalPages, pageNumber, pageSize, sensorReadings);
     }
 
-    public async Task<IEnumerable<SensorReading>> AddSensorDataAsync(SensorReading sensorReading)
+    public async Task<IEnumerable<SensorReading>> AddAsync(SensorReading sensorReading)
     {
         _context.SensorReadings.Add(sensorReading);
         await _context.SaveChangesAsync();
-        return await GetSensorDataByIdAsync(sensorReading.Id);
+        return await GetByIdAsync(sensorReading.Id);
     }
 }
 

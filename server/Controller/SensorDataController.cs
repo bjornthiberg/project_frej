@@ -6,7 +6,7 @@ namespace project_frej.Controllers;
 
 [ApiController]
 [Route("api/sensorData")]
-public class SensorDataController(ISensorDataRepository repository, ILogger<SensorDataController> logger) : ControllerBase
+public class SensorDataController(ISensorDataRepository sensorDataRepository, ILogger<SensorDataController> logger) : ControllerBase
 {
     [HttpGet("/")]
     public IActionResult GetRoot()
@@ -19,7 +19,7 @@ public class SensorDataController(ISensorDataRepository repository, ILogger<Sens
     {
         try
         {
-            return Ok(await repository.GetSensorDataByIdAsync(id));
+            return Ok(await sensorDataRepository.GetByIdAsync(id));
         }
         catch (ArgumentNullException) // ToListAsync throws ArgumentNullException if no data is found
         {
@@ -37,7 +37,7 @@ public class SensorDataController(ISensorDataRepository repository, ILogger<Sens
     {
         try
         {
-            return Ok(await repository.GetSensorDataAggregateHourlyAsync(date, hour));
+            return Ok(await sensorDataRepository.GetAggregateHourlyAsync(date, hour));
         }
         catch (ArgumentNullException) // ToListAsync throws ArgumentNullException if no data is found
         {
@@ -55,7 +55,7 @@ public class SensorDataController(ISensorDataRepository repository, ILogger<Sens
     {
         try
         {
-            return Ok(await repository.GetSensorDataAggregateDailyAsync(date));
+            return Ok(await sensorDataRepository.GetAggregateDailyAsync(date));
         }
         catch (ArgumentNullException) // ToListAsync throws ArgumentNullException if no data is found
         {
@@ -73,7 +73,7 @@ public class SensorDataController(ISensorDataRepository repository, ILogger<Sens
     {
         try
         {
-            return Ok(await repository.GetSensorDataPagedAsync(pageNumber, pageSize));
+            return Ok(await sensorDataRepository.GetPagedAsync(pageNumber, pageSize));
         }
         catch (ArgumentNullException) // ToListAsync throws ArgumentNullException if no data is found
         {
@@ -92,7 +92,7 @@ public class SensorDataController(ISensorDataRepository repository, ILogger<Sens
         logger.LogInformation("Received sensor data: {SensorReading}", sensorReading);
         try
         {
-            return Ok(await repository.AddSensorDataAsync(sensorReading));
+            return Ok(await sensorDataRepository.AddAsync(sensorReading));
         }
         catch (Exception ex)
         {
