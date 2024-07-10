@@ -16,7 +16,7 @@ const DataRetrieval = ({ endpoint, selectedOption, pageSize }) => {
                 setLoading(true);
                 setError(null);
 
-                const response = await axios.get(`${endpoint}/latest?pageSize=${pageSize}`);
+                const response = await axios.get(`${endpoint}?pageSize=${pageSize}`);
                 const sensorData = response.data.data;
 
                 setData(sensorData);
