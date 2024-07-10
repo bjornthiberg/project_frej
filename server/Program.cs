@@ -10,6 +10,8 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<SensorDataContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<ISensorDataRepository, SensorDataRepository>();
+
 builder.Services.AddScoped<AggregationService>();
 builder.Services.AddHostedService<AggregationHostedService>();
 

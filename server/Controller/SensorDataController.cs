@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using project_frej.Data;
 using project_frej.Models;
 
@@ -7,7 +6,7 @@ namespace project_frej.Controllers;
 
 [ApiController]
 [Route("api/sensorData")]
-public class SensorDataController(SensorDataContext context, ILogger<SensorDataController> logger) : ControllerBase
+public class SensorDataController(ISensorDataRepository repository, ILogger<SensorDataController> logger) : ControllerBase
 {
     [HttpGet("/")]
     public IActionResult GetRoot()
@@ -18,59 +17,57 @@ public class SensorDataController(SensorDataContext context, ILogger<SensorDataC
     [HttpGet("{id}")]
     public async Task<IActionResult> GetSensorData(int id)
     {
-        var sensorReading = await context.SensorReadings.FindAsync(id);
-        if (sensorReading == null)
+        try
         {
-            logger.LogWarning("SensorReading with ID {Id} not found", id);
-            return NotFound();
+            return Ok(await repository.GetSensorDataByIdAsync(id));
         }
-
-        logger.LogInformation("SensorReading with ID {Id} provided", id);
-        return Ok(sensorReading);
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while fetching sensor data by id");
+            return Problem("Error while fetching sensor data", statusCode: 500);
+        }
     }
 
     [HttpGet("aggregate/hourly/{date}/{hour}")]
     public async Task<IActionResult> GetSensorDataHourly(DateTime date, int hour)
     {
-        var hourlyAggregates = await context.SensorReadingsHourly
-            .Where(ha => ha.Hour.Date == date.Date && ha.Hour.Hour == hour)
-            .ToListAsync();
-
-        return hourlyAggregates.Count != 0 ? Ok(hourlyAggregates) : NotFound();
+        try
+        {
+            return Ok(await repository.GetSensorDataAggregateHourlyAsync(date, hour));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while fetching hourly sensor data");
+            return Problem("Error while fetching hourly sensor data", statusCode: 500);
+        }
     }
 
     [HttpGet("aggregate/daily/{date}")]
     public async Task<IActionResult> GetSensorDataDaily(DateTime date)
     {
-        var dailyAggregates = await context.SensorReadingsDaily
-            .Where(da => da.Date == date.Date)
-            .ToListAsync();
-
-        return dailyAggregates.Count != 0 ? Ok(dailyAggregates) : NotFound();
+        try
+        {
+            return Ok(await repository.GetSensorDataAggregateDailyAsync(date));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while fetching daily sensor data");
+            return Problem("Error while fetching daily sensor data", statusCode: 500);
+        }
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetSensorData([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
+    public async Task<IActionResult> GetSensorDataPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
     {
-        var totalRecords = await context.SensorReadings.CountAsync();
-        var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
-
-        var sensorReadings = await context.SensorReadings
-            .OrderByDescending(sr => sr.Timestamp)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        var response = new
+        try
         {
-            TotalRecords = totalRecords,
-            TotalPages = totalPages,
-            CurrentPage = pageNumber,
-            PageSize = pageSize,
-            Data = sensorReadings
-        };
-
-        return Ok(response);
+            return Ok(await repository.GetSensorDataPagedAsync(pageNumber, pageSize));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while fetching paged sensor data");
+            return Problem("Error while fetching paged sensor data", statusCode: 500);
+        }
     }
 
     [HttpPost]
@@ -79,15 +76,12 @@ public class SensorDataController(SensorDataContext context, ILogger<SensorDataC
         logger.LogInformation("Received sensor data: {SensorReading}", sensorReading);
         try
         {
-            context.SensorReadings.Add(sensorReading);
-            await context.SaveChangesAsync();
-
-            return Created($"/api/sensorData/{sensorReading.Id}", sensorReading);
+            return Ok(await repository.AddSensorDataAsync(sensorReading));
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error while processing sensor data");
-            return Problem("Error while processing sensor data", statusCode: 500);
+            logger.LogError(ex, "Error while adding sensor data");
+            return Problem("Error while adding sensor data", statusCode: 500);
         }
     }
 
