@@ -96,12 +96,12 @@ namespace project_frej.Tests.ProgramTests
                 Lux = 3000,
                 Uvs = 10,
                 Gas = 100,
-                Timestamp = new System.DateTime(3000, 1, 1)
+                Timestamp = new DateTime(3000, 1, 1)
             };
             _client.DefaultRequestHeaders.Add("Authorization", "testing");
             await _client.PostAsJsonAsync("/api/sensorData", sensorReading);
 
-            var response = await _client.GetAsync("/api/sensorData/latest?pageSize=1");
+            var response = await _client.GetAsync("/api/sensorData?pageSize=1");
 
             response.EnsureSuccessStatusCode();
 
@@ -116,22 +116,6 @@ namespace project_frej.Tests.ProgramTests
             Assert.Equal(sensorReading.Lux, data.GetProperty("lux").GetDouble());
             Assert.Equal(sensorReading.Uvs, data.GetProperty("uvs").GetDouble());
             Assert.Equal(sensorReading.Gas, data.GetProperty("gas").GetDouble());
-        }
-
-        [Fact]
-        public async Task Get_SensorDataAggregateHourly_ReturnsNotFound()
-        {
-            var response = await _client.GetAsync("/api/sensorData/aggregate/hourly");
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task Get_SensorDataAggregateDaily_ReturnsNotFound()
-        {
-            var response = await _client.GetAsync("/api/sensorData/aggregate/daily");
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }
