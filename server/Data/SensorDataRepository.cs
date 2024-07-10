@@ -11,6 +11,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
     {
         return await _context.SensorReadings
             .Where(s => s.Id == id)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -18,6 +19,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
     {
         return await _context.SensorReadingsHourly
             .Where(ha => ha.Hour.Date == date.Date && ha.Hour.Hour == hour)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -25,6 +27,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
     {
         return await _context.SensorReadingsDaily
             .Where(da => da.Date == date.Date)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -37,6 +40,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
             .OrderByDescending(sr => sr.Timestamp)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
+            .AsNoTracking()
             .ToListAsync();
 
         return (totalRecords, totalPages, pageNumber, pageSize, sensorReadings);
