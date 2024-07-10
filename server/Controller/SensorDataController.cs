@@ -87,9 +87,21 @@ public class SensorDataController(ISensorDataRepository sensorDataRepository, IL
     }
 
     [HttpPost]
-    public async Task<IActionResult> PostSensordata([FromBody] SensorReading sensorReading)
+    public async Task<IActionResult> PostSensordata([FromBody] SensorReadingReq sensorReadingReq)
     {
-        logger.LogInformation("Received sensor data: {SensorReading}", sensorReading);
+        logger.LogInformation("Received sensor data: {SensorReading}", sensorReadingReq);
+
+        var sensorReading = new SensorReading
+        {
+            Pressure = sensorReadingReq.Pressure,
+            Temperature = sensorReadingReq.Temperature,
+            Humidity = sensorReadingReq.Humidity,
+            Lux = sensorReadingReq.Lux,
+            Uvs = sensorReadingReq.Uvs,
+            Gas = sensorReadingReq.Gas,
+            Timestamp = sensorReadingReq.Timestamp
+        };
+
         try
         {
             return Ok(await sensorDataRepository.AddAsync(sensorReading));
