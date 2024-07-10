@@ -5,28 +5,39 @@ namespace project_frej.Data;
 
 public class SensorDataRepository(SensorDataContext context) : ISensorDataRepository
 {
-    public async Task<IEnumerable<SensorReading>> GetByIdAsync(int id)
+    public async Task<SensorReading> AddAsync(SensorReading sensorReading)
     {
-        return await context.SensorReadings
-            .Where(s => s.Id == id)
-            .AsNoTracking()
-            .ToListAsync();
+        context.SensorReadings.Add(sensorReading);
+        await context.SaveChangesAsync();
+        return sensorReading;
     }
 
-    public async Task<IEnumerable<SensorReadingHourly>> GetAggregateHourlyAsync(DateTime date, int hour)
+    public async Task<IEnumerable<SensorReading>> AddSensorDataBulkAsync(IEnumerable<SensorReading> sensorReadings)
+    {
+        context.SensorReadings.AddRange(sensorReadings);
+        await context.SaveChangesAsync();
+        return sensorReadings;
+    }
+
+    public async Task<SensorReading?> GetByIdAsync(int id)
+    {
+        return await context.SensorReadings.FindAsync(id);
+    }
+
+    public async Task<SensorReadingHourly?> GetAggregateHourlyAsync(DateTime date, int hour)
     {
         return await context.SensorReadingsHourly
             .Where(ha => ha.Hour.Date == date.Date && ha.Hour.Hour == hour)
             .AsNoTracking()
-            .ToListAsync();
+            .FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<SensorReadingDaily>> GetAggregateDailyAsync(DateTime date)
+    public async Task<SensorReadingDaily?> GetAggregateDailyAsync(DateTime date)
     {
         return await context.SensorReadingsDaily
             .Where(da => da.Date == date.Date)
             .AsNoTracking()
-            .ToListAsync();
+            .FirstOrDefaultAsync();
     }
 
     public async Task<(int TotalRecords, int TotalPages, int CurrentPage, int PageSize, List<SensorReading> Data)> GetPagedAsync(int pageNumber, int pageSize)
@@ -44,11 +55,54 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
         return (totalRecords, totalPages, pageNumber, pageSize, sensorReadings);
     }
 
-    public async Task<IEnumerable<SensorReading>> AddAsync(SensorReading sensorReading)
+    public async Task<IEnumerable<SensorReading>> GetAllSensorDataAsync()
     {
-        context.SensorReadings.Add(sensorReading);
-        await context.SaveChangesAsync();
-        return await GetByIdAsync(sensorReading.Id);
+        return await context.SensorReadings
+            .AsNoTracking()
+            .ToListAsync();
     }
+
+    public async Task<IEnumerable<SensorReading>> GetSensorDataByDateRangeAsync(DateTime startDate, DateTime endDate)
+    {
+        return await context.SensorReadings
+            .Where(sr => sr.Timestamp >= startDate && sr.Timestamp <= endDate)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task<SensorReading?> UpdateSensorDataByIdAsync(int id, SensorReading sensorReading)
+    {
+        var existingSensorReading = await context.SensorReadings.FindAsync(id);
+
+        if (existingSensorReading != null)
+        {
+            existingSensorReading.Pressure = sensorReading.Pressure;
+            existingSensorReading.Temperature = sensorReading.Temperature;
+            existingSensorReading.Humidity = sensorReading.Humidity;
+            existingSensorReading.Lux = sensorReading.Lux;
+            existingSensorReading.Uvs = sensorReading.Uvs;
+            existingSensorReading.Gas = sensorReading.Gas;
+            existingSensorReading.Timestamp = sensorReading.Timestamp;
+
+            await context.SaveChangesAsync();
+        }
+
+        return existingSensorReading;
+    }
+
+    public async Task<bool> DeleteSensorDataByIdAsync(int id)
+    {
+        var sensorReading = await context.SensorReadings.FindAsync(id);
+
+        if (sensorReading != null)
+        {
+            context.SensorReadings.Remove(sensorReading);
+            await context.SaveChangesAsync();
+            return true;
+        }
+
+        return false;
+    }
+
 }
 
