@@ -50,6 +50,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .AsNoTracking()
+            .OrderBy(sr => sr.Timestamp)
             .ToListAsync();
 
         return (totalRecords, totalPages, pageNumber, pageSize, sensorReadings);
