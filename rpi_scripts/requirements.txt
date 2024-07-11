@@ -1,7 +1,8 @@
-certifi==2024.7.4
+certifi==2024.6.2
 charset-normalizer==3.3.2
 idna==3.7
 iniconfig==2.0.0
+numpy==2.0.0
 packaging==24.1
 peewee==3.17.5
 pillow==10.3.0
@@ -9,5 +10,7 @@ pluggy==1.5.0
 pytest==8.2.2
 python-dotenv==1.0.1
 requests==2.32.3
+RTIMULib==7.2.1
+sense-hat==2.6.0
 smbus2==0.4.3
 urllib3==2.2.2
