@@ -14,6 +14,60 @@ public class SensorDataController(ISensorDataRepository sensorDataRepository, IL
         return Ok("API for Project Frej");
     }
 
+    [HttpPost]
+    public async Task<IActionResult> PostSensordata([FromBody] SensorReadingReq sensorReadingReq)
+    {
+        logger.LogInformation("Received sensor data: {SensorReading}", sensorReadingReq);
+
+        var sensorReading = new SensorReading
+        {
+            Pressure = sensorReadingReq.Pressure,
+            Temperature = sensorReadingReq.Temperature,
+            Humidity = sensorReadingReq.Humidity,
+            Lux = sensorReadingReq.Lux,
+            Uvs = sensorReadingReq.Uvs,
+            Gas = sensorReadingReq.Gas,
+            Timestamp = sensorReadingReq.Timestamp
+        };
+
+        try
+        {
+            return Ok(await sensorDataRepository.AddAsync(sensorReading));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while adding sensor data {SensorReading}", sensorReading);
+            return Problem("Error while adding sensor data", statusCode: 500);
+        }
+    }
+
+    [HttpPost("bulk")]
+    public async Task<IActionResult> PostBulkSensordata([FromBody] IEnumerable<SensorReadingReq> sensorReadingReqs)
+    {
+        logger.LogInformation("Received bulk sensor data: {SensorReadingReqs}", sensorReadingReqs);
+
+        var sensorReadings = sensorReadingReqs.Select(sr => new SensorReading
+        {
+            Pressure = sr.Pressure,
+            Temperature = sr.Temperature,
+            Humidity = sr.Humidity,
+            Lux = sr.Lux,
+            Uvs = sr.Uvs,
+            Gas = sr.Gas,
+            Timestamp = sr.Timestamp
+        });
+
+        try
+        {
+            return Ok(await sensorDataRepository.AddBulkAsync(sensorReadings));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while adding bulk sensor data {SensorReadingReqs}", sensorReadingReqs);
+            return Problem("Error while adding bulk sensor data", statusCode: 500);
+        }
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetSensorData(int id)
     {
@@ -97,11 +151,45 @@ public class SensorDataController(ISensorDataRepository sensorDataRepository, IL
         }
     }
 
-    [HttpPost]
-    public async Task<IActionResult> PostSensordata([FromBody] SensorReadingReq sensorReadingReq)
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllSensorData()
     {
-        logger.LogInformation("Received sensor data: {SensorReading}", sensorReadingReq);
+        try
+        {
+            return Ok(await sensorDataRepository.GetAllAsync());
+        }
+        catch (ArgumentNullException) // ToListAsync throws ArgumentNullException if no data is found
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while fetching all sensor data");
+            return Problem("Error while fetching all sensor data", statusCode: 500);
+        }
+    }
 
+    [HttpGet("date-range/{startDate}/{endDate}")]
+    public async Task<IActionResult> GetSensorDataByDateRange(DateTime startDate, DateTime endDate)
+    {
+        try
+        {
+            return Ok(await sensorDataRepository.GetByDateRangeAsync(startDate, endDate));
+        }
+        catch (ArgumentNullException) // ToListAsync throws ArgumentNullException if no data is found
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while fetching sensor data by date range for {StartDate} and {EndDate}", startDate, endDate);
+            return Problem("Error while fetching sensor data by date range", statusCode: 500);
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutSensorData(int id, [FromBody] SensorReadingReq sensorReadingReq)
+    {
         var sensorReading = new SensorReading
         {
             Pressure = sensorReadingReq.Pressure,
@@ -115,14 +203,41 @@ public class SensorDataController(ISensorDataRepository sensorDataRepository, IL
 
         try
         {
-            return Ok(await sensorDataRepository.AddAsync(sensorReading));
+            var result = await sensorDataRepository.UpdateByIdAsync(id, sensorReading);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(result);
+            }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error while adding sensor data {SensorReading}", sensorReading);
-            return Problem("Error while adding sensor data", statusCode: 500);
+            logger.LogError(ex, "Error while updating sensor data by id {Id}", id);
+            return Problem("Error while updating sensor data", statusCode: 500);
         }
     }
 
-
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteSensorData(int id)
+    {
+        try
+        {
+            if (await sensorDataRepository.DeleteByIdAsync(id))
+            {
+                return Ok();
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while deleting sensor data by id {Id}", id);
+            return Problem("Error while deleting sensor data", statusCode: 500);
+        }
+    }
 }
