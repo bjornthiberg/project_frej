@@ -40,7 +40,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
             .FirstOrDefaultAsync();
     }
 
-    public async Task<(int TotalRecords, int TotalPages, int CurrentPage, int PageSize, List<SensorReading> Data)> GetPagedAsync(int pageNumber, int pageSize)
+    public async Task<PagedResult<SensorReading>> GetPagedAsync(int pageNumber, int pageSize)
     {
         var totalRecords = await context.SensorReadings.CountAsync();
         var totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
@@ -53,7 +53,14 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
             .OrderBy(sr => sr.Timestamp)
             .ToListAsync();
 
-        return (totalRecords, totalPages, pageNumber, pageSize, sensorReadings);
+        return new PagedResult<SensorReading>
+        {
+            TotalRecords = totalRecords,
+            TotalPages = totalPages,
+            CurrentPage = pageNumber,
+            PageSize = pageSize,
+            Data = sensorReadings
+        };
     }
 
     public async Task<IEnumerable<SensorReading>> GetAllSensorDataAsync()
