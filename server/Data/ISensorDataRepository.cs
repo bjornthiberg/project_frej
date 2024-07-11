@@ -9,7 +9,7 @@ public interface ISensorDataRepository
     Task<SensorReading?> GetByIdAsync(int id);
     Task<SensorReadingHourly?> GetAggregateHourlyAsync(DateTime date, int hour);
     Task<SensorReadingDaily?> GetAggregateDailyAsync(DateTime date);
-    Task<(int TotalRecords, int TotalPages, int CurrentPage, int PageSize, List<SensorReading> Data)> GetPagedAsync(int pageNumber, int pageSize);
+    Task<PagedResult<SensorReading>> GetPagedAsync(int pageNumber, int pageSize);
     Task<IEnumerable<SensorReading>> GetAllSensorDataAsync();
     Task<IEnumerable<SensorReading>> GetSensorDataByDateRangeAsync(DateTime startDate, DateTime endDate);
     Task<SensorReading?> UpdateSensorDataByIdAsync(int id, SensorReading sensorReading);
