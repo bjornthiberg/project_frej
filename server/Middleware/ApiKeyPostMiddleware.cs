@@ -1,8 +1,3 @@
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.Extensions.Configuration;
-//using Microsoft.Extensions.Logging;
-//using System.Threading.Tasks;
-
 namespace project_frej.Middleware
 {
     public class ApiKeyPostMiddleware
@@ -19,7 +14,7 @@ namespace project_frej.Middleware
 
         public async Task InvokeAsync(HttpContext context, IConfiguration configuration)
         {
-            if (!IsSensorDataPostRequest(context))
+            if (!IsPostRequest(context) && !IsPutRequest(context) && !IsPatchRequest(context) && !IsDeleteRequest(context))
             {
                 await _next(context);
                 return;
@@ -54,10 +49,26 @@ namespace project_frej.Middleware
             await _next(context);
         }
 
-        private bool IsSensorDataPostRequest(HttpContext context)
+        private static bool IsPostRequest(HttpContext context)
         {
-            return context.Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase);
+            return context.Request.Method.Equals("POST");
         }
+
+        private static bool IsPutRequest(HttpContext context)
+        {
+            return context.Request.Method.Equals("PUT");
+        }
+
+        private static bool IsPatchRequest(HttpContext context)
+        {
+            return context.Request.Method.Equals("PATCH");
+        }
+
+        private static bool IsDeleteRequest(HttpContext context)
+        {
+            return context.Request.Method.Equals("DELETE");
+        }
+
     }
 
 }

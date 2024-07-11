@@ -12,7 +12,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
         return sensorReading;
     }
 
-    public async Task<IEnumerable<SensorReading>> AddSensorDataBulkAsync(IEnumerable<SensorReading> sensorReadings)
+    public async Task<IEnumerable<SensorReading>> AddBulkAsync(IEnumerable<SensorReading> sensorReadings)
     {
         context.SensorReadings.AddRange(sensorReadings);
         await context.SaveChangesAsync();
@@ -63,14 +63,14 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
         };
     }
 
-    public async Task<IEnumerable<SensorReading>> GetAllSensorDataAsync()
+    public async Task<IEnumerable<SensorReading>> GetAllAsync()
     {
         return await context.SensorReadings
             .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<SensorReading>> GetSensorDataByDateRangeAsync(DateTime startDate, DateTime endDate)
+    public async Task<IEnumerable<SensorReading>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         return await context.SensorReadings
             .Where(sr => sr.Timestamp >= startDate && sr.Timestamp <= endDate)
@@ -78,7 +78,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
             .ToListAsync();
     }
 
-    public async Task<SensorReading?> UpdateSensorDataByIdAsync(int id, SensorReading sensorReading)
+    public async Task<SensorReading?> UpdateByIdAsync(int id, SensorReading sensorReading)
     {
         var existingSensorReading = await context.SensorReadings.FindAsync(id);
 
@@ -98,7 +98,7 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
         return existingSensorReading;
     }
 
-    public async Task<bool> DeleteSensorDataByIdAsync(int id)
+    public async Task<bool> DeleteByIdAsync(int id)
     {
         var sensorReading = await context.SensorReadings.FindAsync(id);
 
