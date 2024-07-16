@@ -1,13 +1,13 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
-import DashboardLayout from '../components/DashboardLayout';
+import Dashboard from '../components/Dashboard';
 import Footer from '../components/Footer';
 
 const HomePage = () => {
   return (
     <div>
       <Navbar />
-      <DashboardLayout />
+      <Dashboard />
       <Footer />
     </div>
   );
