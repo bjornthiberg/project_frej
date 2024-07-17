@@ -1,4 +1,5 @@
-import React from 'react';
+import PropTypes from 'prop-types';
+import dayjs from 'dayjs';
 import { Box } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
@@ -23,4 +24,15 @@ const CustomDatePicker = ({ customStartDate, customEndDate, handleCustomDateChan
     );
 };
 
+function isValidDayjsProp(props, propName) {
+    if (!dayjs(props[propName]).isValid()) {
+        return new Error(`Invalid prop ${propName} supplied to CustomDatePicker. Validation failed.`);
+    }
+}
+
+CustomDatePicker.propTypes = {
+    customStartDate: isValidDayjsProp,
+    customEndDate: isValidDayjsProp,
+    handleCustomDateChange: PropTypes.func.isRequired,
+};
 export default CustomDatePicker;

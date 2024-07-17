@@ -1,8 +1,8 @@
-import React from "react";
+import PropTypes from 'prop-types';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-export default function TimeToggleButtons({ selectedTimeRange, onTimeRangeChange }) {
+function TimeToggleButtons({ selectedTimeRange, onTimeRangeChange }) {
     const handleRangeChange = (event, newRange) => {
         if (newRange !== null) {
             onTimeRangeChange(newRange);
@@ -31,3 +31,10 @@ export default function TimeToggleButtons({ selectedTimeRange, onTimeRangeChange
         </ToggleButtonGroup>
     );
 }
+
+TimeToggleButtons.propTypes = {
+    selectedTimeRange: PropTypes.string.isRequired,
+    onTimeRangeChange: PropTypes.func.isRequired,
+};
+
+export default TimeToggleButtons;

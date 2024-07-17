@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
 import TimeToggleButtons from './TimeToggleButtons';
 import DataTypePicker from './DataTypePicker';
@@ -23,6 +23,17 @@ const ChartFilterBar = ({
             />
         </Box>
     );
+};
+
+ChartFilterBar.propTypes = {
+    selectedOption: PropTypes.string.isRequired,
+    handleOptionChange: PropTypes.func.isRequired,
+    options: PropTypes.arrayOf(PropTypes.shape({
+        value: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
+    })).isRequired,
+    selectedTimeRange: PropTypes.string.isRequired,
+    handleTimeRangeChange: PropTypes.func.isRequired,
 };
 
 export default ChartFilterBar;

@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 const DataTypePicker = ({ selectedOption, handleOptionChange, options }) => {
@@ -20,5 +20,14 @@ const DataTypePicker = ({ selectedOption, handleOptionChange, options }) => {
         </FormControl>
     );
 };
+
+DataTypePicker.propTypes = {
+    selectedOption: PropTypes.string.isRequired,
+    handleOptionChange: PropTypes.func.isRequired,
+    options: PropTypes.arrayOf(PropTypes.shape({
+        value: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
+    })).isRequired,
+}
 
 export default DataTypePicker;
