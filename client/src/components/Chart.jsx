@@ -1,7 +1,7 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
-import { Paper, Box, Typography } from '@mui/material';
+import { Paper, Box, Typography, Alert } from '@mui/material';
 import 'chartjs-adapter-date-fns';
 
 const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
@@ -33,9 +33,7 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
     return (
       <Paper elevation={3}>
         <Box p={2} height="400px" display="flex" justifyContent="center" alignItems="center">
-          <Typography variant="h6">
-            No data fetched.
-          </Typography>
+          <Alert severity="info">No data fetched.</Alert>
         </Box>
       </Paper>
     );
@@ -70,6 +68,7 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false, // Allow the chart to take the full height of its container
     scales: {
       x: {
         type: 'time',
@@ -117,9 +116,11 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
   };
 
   return (
-    <Paper elevation={3}>
-      <Box p={2}>
-        <Line data={chartData} options={chartOptions} />
+    <Paper elevation={3} sx={{ height: '100%', width: '100%' }}>
+      <Box p={2} sx={{ height: '100%', width: '100%' }}>
+        <Box sx={{ height: { xs: '300px', sm: '400px', md: '500px', lg: '600px' } }}>
+          <Line data={chartData} options={chartOptions} />
+        </Box>
       </Box>
     </Paper>
   );

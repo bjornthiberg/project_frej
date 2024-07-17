@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Paper, Alert } from '@mui/material';
+import { Container, Grid, Paper, Alert, Box } from '@mui/material';
 import ChartFilterBar from './ChartFilterBar';
 import Chart from './Chart';
+import CustomDatePicker from './CustomDatePicker';
 import FetchSensorData from '../services/FetchSensorData';
 import dayjs from 'dayjs';
 
@@ -107,6 +108,8 @@ const Dashboard = () => {
         <Grid item xs={12}>
           {error ? (
             <Alert severity="error">{error}</Alert>
+          ) : !data.length ? (
+            <Alert severity="info">No data fetched.</Alert>
           ) : (
             <Chart
               data={data}
@@ -115,6 +118,17 @@ const Dashboard = () => {
               error={error}
               granularity={granularity}
             />
+          )}
+        </Grid>
+        <Grid item xs={12}>
+          {chartConfig.timeRange === 'custom' && (
+            <Box mt={2} display="flex" justifyContent="center">
+              <CustomDatePicker
+                customStartDate={customDates.start}
+                customEndDate={customDates.end}
+                handleCustomDateChange={handleCustomDateChange}
+              />
+            </Box>
           )}
         </Grid>
       </Grid>
