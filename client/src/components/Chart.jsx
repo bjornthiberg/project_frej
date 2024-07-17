@@ -1,9 +1,10 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
-import { Paper, Box } from '@mui/material';
+import { Paper, Box, Typography } from '@mui/material';
+import 'chartjs-adapter-date-fns';
 
-const Chart = ({ data, selectedOption, error }) => {
+const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
   const labels = {
     temperature: 'Temperature (°C)',
     pressure: 'Pressure (hPa)',
@@ -20,7 +21,9 @@ const Chart = ({ data, selectedOption, error }) => {
     return (
       <Paper elevation={3}>
         <Box p={2} height="400px" display="flex" justifyContent="center" alignItems="center">
-          {error}
+          <Typography variant="h6" color="error">
+            {error}
+          </Typography>
         </Box>
       </Paper>
     );
@@ -30,25 +33,28 @@ const Chart = ({ data, selectedOption, error }) => {
     return (
       <Paper elevation={3}>
         <Box p={2} height="400px" display="flex" justifyContent="center" alignItems="center">
-          No data available. Please select a data type.
+          <Typography variant="h6">
+            No data fetched.
+          </Typography>
         </Box>
       </Paper>
     );
   }
 
-  const chartLabels = data.map((entry) =>
-    new Date(entry.timestamp).toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    })
-  );
+  const displayFormats = {
+    minute: 'HH:mm',
+    hour: 'MMM dd HH:00',
+    day: 'MMM dd',
+  };
+
+  const unit = {
+    minute: 'minute',
+    hour: 'hour',
+    day: 'day',
+  };
 
   const chartData = {
-    labels: chartLabels,
+    labels: data.map(entry => entry.timestamp), // Use raw timestamps for Chart.js to format
     datasets: [
       {
         label: labels[selectedOption],
@@ -56,7 +62,7 @@ const Chart = ({ data, selectedOption, error }) => {
         fill: false,
         backgroundColor: colors[selectedOption],
         borderColor: colors[selectedOption],
-        borderWidth: 2,
+        borderWidth: 1,
         tension: 0,
       },
     ],
@@ -66,6 +72,14 @@ const Chart = ({ data, selectedOption, error }) => {
     responsive: true,
     scales: {
       x: {
+        type: 'time',
+        time: {
+          unit: unit[granularity], // Dynamic unit based on granularity prop
+          tooltipFormat: 'Pp',
+          displayFormats: {
+            [unit[granularity]]: displayFormats[granularity], // Dynamic display format
+          },
+        },
         title: {
           display: true,
           text: 'Timestamp',
@@ -86,6 +100,10 @@ const Chart = ({ data, selectedOption, error }) => {
             size: 14,
           },
         },
+      },
+      title: {
+        display: true,
+        text: `Sensor Data (${isAggregated ? 'Aggregated' : 'Raw'})`,
       },
     },
     elements: {

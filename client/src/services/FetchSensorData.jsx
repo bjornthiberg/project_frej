@@ -1,37 +1,112 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 
-const baseUrl = 'https://frejapi.thiberg.dev/api';
+const baseUrl = "https://frejapi.thiberg.dev/api";
 
-const getStartDate = (timeRange) => {
-    const now = dayjs();
-    switch (timeRange) {
-        case 'hour':
-            return now.subtract(1, 'hour').format('YYYY-MM-DDTHH:mm');
-        case 'day':
-            return now.subtract(1, 'day').format('YYYY-MM-DDTHH:mm');
-        case 'week':
-            return now.subtract(1, 'week').format('YYYY-MM-DDTHH:mm');
-        default:
-            throw new Error('Invalid time range');
+const mapAggregateData = (data, option) => {
+    const avgKey = `avg${option.charAt(0).toUpperCase() + option.slice(1)}`;
+    return data
+        .filter(entry => entry.hour || entry.date) // Filter out entries without valid timestamps
+        .map((entry) => ({
+            timestamp: entry.hour || entry.date,
+            [option]: entry[avgKey],
+        }))
+        .filter(entry => dayjs(entry.timestamp).isValid()); // Filter out entries with invalid dates
+};
+
+const fetchHourlyAggregatesLast24Hours = async (date, option) => {
+    const hourlyData = [];
+    let currentDate = dayjs(date).subtract(24, 'hours');
+
+    for (let hour = 0; hour < 24; hour++) {
+        const url = `${baseUrl}/sensorData/aggregate/hourly/${currentDate.format('YYYY-MM-DD')}/${currentDate.hour()}`;
+        try {
+            const response = await axios.get(url);
+            if (response.data) {
+                hourlyData.push(response.data);
+            }
+        } catch (error) {
+            console.error('Error fetching hourly aggregate:', error);
+            return { data: [], error: 'Error fetching hourly aggregate data' };
+        }
+        currentDate = currentDate.add(1, 'hour');
     }
+    return { data: mapAggregateData(hourlyData, option), error: null };
+};
+
+const fetchHourlyAggregates = async (startDate, endDate, option) => {
+    const hourlyData = [];
+    let currentDate = dayjs(startDate).startOf('hour');
+
+    while (currentDate.isBefore(endDate) || currentDate.isSame(endDate)) {
+        const dateFormatted = currentDate.format('YYYY-MM-DD');
+        const hourFormatted = currentDate.hour();
+
+        const url = `${baseUrl}/sensorData/aggregate/hourly/${dateFormatted}/${hourFormatted}`;
+        try {
+            const response = await axios.get(url);
+            if (response.data) {
+                hourlyData.push(response.data);
+            }
+        } catch (error) {
+            console.error('Error fetching hourly aggregate:', error);
+            return { data: [], error: 'Error fetching hourly aggregate data' };
+        }
+        currentDate = currentDate.add(1, 'hour');
+    }
+    return { data: mapAggregateData(hourlyData, option), error: null };
+};
+
+const fetchDailyAggregates = async (startDate, nDays, option) => {
+    const dailyData = [];
+    for (let day = 0; day < nDays; day++) {
+        const date = dayjs(startDate).add(day, 'day').format('YYYY-MM-DD');
+        const url = `${baseUrl}/sensorData/aggregate/daily/${date}`;
+        try {
+            const response = await axios.get(url);
+            if (response.data) {
+                dailyData.push(response.data);
+            }
+        } catch (error) {
+            console.error('Error fetching daily aggregate:', error);
+            return { data: [], error: 'Error fetching daily aggregate data' };
+        }
+    }
+    return { data: mapAggregateData(dailyData, option), error: null };
 };
 
 const FetchSensorData = async (option, timeRange, customStartDate, customEndDate) => {
     let startDate;
     let endDate;
-
-    if (timeRange === 'custom' && customStartDate && customEndDate) {
-        startDate = dayjs(customStartDate).format('YYYY-MM-DDTHH:mm');
-        endDate = dayjs(customEndDate).format('YYYY-MM-DDTHH:mm');
-    } else {
-        startDate = getStartDate(timeRange);
-        endDate = dayjs().format('YYYY-MM-DDTHH:mm');
-    }
-
-    const url = `${baseUrl}/sensorData/date-range/${startDate}/${endDate}`;
+    let url;
 
     try {
+        if (timeRange === 'hour') {
+            startDate = dayjs().subtract(1, 'hour').format('YYYY-MM-DDTHH:mm');
+            endDate = dayjs().format('YYYY-MM-DDTHH:mm');
+            url = `${baseUrl}/sensorData/date-range/${startDate}/${endDate}`;
+        } else if (timeRange === 'day') {
+            const date = dayjs().format('YYYY-MM-DDTHH:00');
+            return await fetchHourlyAggregatesLast24Hours(date, option);
+        } else if (timeRange === 'week') {
+            const start = dayjs().subtract(1, 'week').format('YYYY-MM-DD');
+            return await fetchDailyAggregates(start, 7, option);
+        } else if (timeRange === 'custom' && customStartDate && customEndDate) {
+            startDate = dayjs(customStartDate).format('YYYY-MM-DDTHH:mm');
+            endDate = dayjs(customEndDate).format('YYYY-MM-DDTHH:mm');
+            const timeRangeSize = dayjs(endDate).diff(dayjs(startDate), 'hours');
+
+            if (timeRangeSize <= 2) {
+                url = `${baseUrl}/sensorData/date-range/${startDate}/${endDate}`;
+            } else if (timeRangeSize <= 24 * 7) {
+                return await fetchHourlyAggregates(startDate, endDate, option);
+            } else {
+                const start = dayjs(customStartDate).format('YYYY-MM-DD');
+                const days = dayjs(endDate).diff(dayjs(startDate), 'day');
+                return await fetchDailyAggregates(start, days, option);
+            }
+        }
+
         const response = await axios.get(url, { params: { type: option } });
         return { data: response.data, error: null };
     } catch (error) {
