@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid } from '@mui/material';
+import { Container, Grid, Paper, Alert } from '@mui/material';
 import ChartFilterBar from './ChartFilterBar';
 import Chart from './Chart';
 import FetchSensorData from '../services/FetchSensorData';
@@ -18,6 +18,8 @@ const Dashboard = () => {
 
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [isAggregated, setIsAggregated] = useState(false);
+  const [granularity, setGranularity] = useState('minute');
 
   const options = [
     { label: 'Temperature (°C)', value: 'temperature' },
@@ -25,13 +27,38 @@ const Dashboard = () => {
     { label: 'Pressure (hPa)', value: 'pressure' },
   ];
 
+  const determineGranularity = (timeRange, start, end) => {
+    if (timeRange === 'hour') return 'minute';
+    if (timeRange === 'day') return 'hour';
+    if (timeRange === 'week') return 'day';
+    if (timeRange === 'custom') {
+      const diffInHours = dayjs(end).diff(dayjs(start), 'hour');
+      if (diffInHours <= 2) return 'minute';
+      if (diffInHours <= 24 * 7) return 'hour';
+      return 'day';
+    }
+    return 'minute';
+  };
+
   useEffect(() => {
     if (chartConfig.option) {
-      FetchSensorData(chartConfig.option, chartConfig.timeRange, customDates.start, customDates.end)
-        .then(({ data, error }) => {
-          setData(data);
-          setError(error);
-        });
+      const { timeRange, option } = chartConfig;
+      const { start, end } = customDates;
+
+      const newGranularity = determineGranularity(timeRange, start, end);
+      setGranularity(newGranularity);
+
+      FetchSensorData(option, timeRange, start, end).then(({ data, error }) => {
+        setData(data);
+        setError(error);
+
+        if (timeRange === 'custom') {
+          const diffInHours = dayjs(end).diff(dayjs(start), 'hour');
+          setIsAggregated(diffInHours >= 2);
+        } else {
+          setIsAggregated(timeRange !== 'hour');
+        }
+      });
     }
   }, [chartConfig, customDates]);
 
@@ -40,6 +67,19 @@ const Dashboard = () => {
       ...prevConfig,
       [key]: value,
     }));
+
+    if (key === 'timeRange' && value === 'custom' && chartConfig.option) {
+      const { start, end } = customDates;
+      const newGranularity = determineGranularity('custom', start, end);
+      setGranularity(newGranularity);
+
+      FetchSensorData(chartConfig.option, 'custom', start, end).then(({ data, error }) => {
+        setData(data);
+        setError(error);
+        const diffInHours = dayjs(end).diff(dayjs(start), 'hour');
+        setIsAggregated(diffInHours >= 2);
+      });
+    }
   };
 
   const handleCustomDateChange = (key, value) => {
@@ -47,14 +87,6 @@ const Dashboard = () => {
       ...prevDates,
       [key]: value,
     }));
-
-    if (chartConfig.timeRange === 'custom' && chartConfig.option) {
-      FetchSensorData(chartConfig.option, 'custom', customDates.start, customDates.end)
-        .then(({ data, error }) => {
-          setData(data);
-          setError(error);
-        });
-    }
   };
 
   return (
@@ -73,7 +105,17 @@ const Dashboard = () => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Chart data={data} selectedOption={chartConfig.option} error={error} />
+          {error ? (
+            <Alert severity="error">{error}</Alert>
+          ) : (
+            <Chart
+              data={data}
+              selectedOption={chartConfig.option}
+              isAggregated={isAggregated}
+              error={error}
+              granularity={granularity}
+            />
+          )}
         </Grid>
       </Grid>
     </Container>
