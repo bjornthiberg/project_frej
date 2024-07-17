@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 import { Paper, Box, Typography, Alert } from '@mui/material';
@@ -124,6 +124,14 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
       </Box>
     </Paper>
   );
+};
+
+Chart.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  selectedOption: PropTypes.string.isRequired,
+  isAggregated: PropTypes.bool.isRequired,
+  error: PropTypes.string,
+  granularity: PropTypes.string.isRequired,
 };
 
 export default Chart;

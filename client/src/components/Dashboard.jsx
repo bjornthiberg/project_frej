@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Grid, Paper, Alert, Box } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Container, Grid, Alert, Box } from '@mui/material';
 import ChartFilterBar from './ChartFilterBar';
 import Chart from './Chart';
 import CustomDatePicker from './CustomDatePicker';
