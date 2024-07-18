@@ -4,7 +4,7 @@ import 'chart.js/auto';
 import { Paper, Box, Alert } from '@mui/material';
 import 'chartjs-adapter-date-fns';
 
-const Chart = ({ data, selectedOption, isAggregated, error, granularity, timeSpan }) => {
+const Chart = ({ data, selectedOption, isAggregated, aggregationType, error, granularity }) => {
   const labels = {
     temperature: 'Temperature (°C)',
     pressure: 'Pressure (hPa)',
@@ -23,7 +23,7 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity, timeSpa
     );
   }
 
-  if (selectedOption == '') {
+  if (selectedOption === '') {
     return (
       <Alert severity="info">Please select a Data Type.</Alert>
     );
@@ -48,7 +48,7 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity, timeSpa
   };
 
   const chartData = {
-    labels: data.map(entry => entry.timestamp), // Use raw timestamps for Chart.js to format
+    labels: data.map(entry => entry.timestamp),
     datasets: [
       {
         label: labels[selectedOption],
@@ -64,20 +64,20 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity, timeSpa
 
   const chartOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Allow the chart to take the full height of its container
+    maintainAspectRatio: false,
     scales: {
       x: {
         type: 'time',
         time: {
-          unit: unit[granularity], // Dynamic unit based on granularity prop
+          unit: unit[granularity],
           tooltipFormat: 'Pp',
           displayFormats: {
-            [unit[granularity]]: displayFormats[granularity], // Dynamic display format
+            [unit[granularity]]: displayFormats[granularity],
           },
         },
         title: {
           display: true,
-          text: 'Timestamp',
+          text: 'Time',
         },
       },
       y: {
@@ -98,7 +98,10 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity, timeSpa
       },
       title: {
         display: true,
-        text: `Sensor Data (${isAggregated ? 'Average' : 'Raw'}) for ${timeSpan}`,
+        text: `Sensor Data (${isAggregated ? `${aggregationType} average` : 'Raw'})`,
+        font: {
+          size: 18,
+        },
       },
     },
     elements: {
@@ -126,6 +129,7 @@ Chart.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
   selectedOption: PropTypes.string.isRequired,
   isAggregated: PropTypes.bool.isRequired,
+  aggregationType: PropTypes.string,
   error: PropTypes.string,
   granularity: PropTypes.string.isRequired,
   timeSpan: PropTypes.string.isRequired,

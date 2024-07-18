@@ -22,6 +22,7 @@ const Dashboard = () => {
   const [isAggregated, setIsAggregated] = useState(false);
   const [granularity, setGranularity] = useState('minute');
   const [timeSpan, setTimeSpan] = useState('');
+  const [aggregationType, setAggregationType] = useState("");
 
   const options = [
     { label: 'Temperature (°C)', value: 'temperature' },
@@ -50,10 +51,11 @@ const Dashboard = () => {
       const newGranularity = determineGranularity(timeRange, start, end);
       setGranularity(newGranularity);
 
-      FetchSensorData(option, timeRange, start, end).then(({ data, error, isAggregated, timeSpan }) => {
+      FetchSensorData(option, timeRange, start, end).then(({ data, error, isAggregated, aggregationType, timeSpan }) => {
         setData(data);
         setError(error);
         setIsAggregated(isAggregated);
+        setAggregationType(aggregationType);
         setTimeSpan(timeSpan);
       });
     }
@@ -70,10 +72,11 @@ const Dashboard = () => {
       const newGranularity = determineGranularity('custom', start, end);
       setGranularity(newGranularity);
 
-      FetchSensorData(chartConfig.option, 'custom', start, end).then(({ data, error, isAggregated, timeSpan }) => {
+      FetchSensorData(chartConfig.option, 'custom', start, end).then(({ data, error, isAggregated, aggregationType, timeSpan }) => {
         setData(data);
         setError(error);
         setIsAggregated(isAggregated);
+        setAggregationType(aggregationType);
         setTimeSpan(timeSpan);
       });
     }
@@ -106,6 +109,7 @@ const Dashboard = () => {
             data={data}
             selectedOption={chartConfig.option}
             isAggregated={isAggregated}
+            aggregationType={aggregationType}
             error={error}
             granularity={granularity}
             timeSpan={timeSpan}
