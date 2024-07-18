@@ -91,19 +91,19 @@ const FetchSensorData = async (option, timeRange, customStartDate, customEndDate
 
     try {
         if (timeRange === 'hour') {
-            startDate = dayjs().subtract(1, 'hour').toISOString();
-            endDate = dayjs().toISOString();
+            startDate = dayjs().subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss');
+            endDate = dayjs().format('YYYY-MM-DDTHH:mm:ss');
             url = `${baseUrl}/sensorData/date-range/${startDate}/${endDate}`;
         } else if (timeRange === 'day') {
             const date = dayjs().format('YYYY-MM-DDTHH:00');
             return await fetchHourlyAggregatesLast24Hours(date, option);
         } else if (timeRange === 'week') {
-            startDate = dayjs().subtract(1, 'week').toISOString();
-            endDate = dayjs().toISOString();
+            startDate = dayjs().subtract(1, 'week').format('YYYY-MM-DD');
+            endDate = dayjs().format('YYYY-MM-DD');
             return await fetchDailyAggregates(startDate, 7, option);
         } else if (timeRange === 'custom' && customStartDate && customEndDate) {
-            startDate = dayjs(customStartDate).toISOString();
-            endDate = dayjs(customEndDate).toISOString();
+            startDate = dayjs(customStartDate).format('YYYY-MM-DDTHH:mm:ss');
+            endDate = dayjs(customEndDate).format('YYYY-MM-DDTHH:mm:ss');
             const timeRangeSize = dayjs(endDate).diff(dayjs(startDate), 'hours');
 
             if (timeRangeSize <= 2) {
@@ -111,20 +111,20 @@ const FetchSensorData = async (option, timeRange, customStartDate, customEndDate
             } else if (timeRangeSize <= 24 * 7) {
                 return await fetchHourlyAggregates(startDate, endDate, option);
             } else {
-                const start = dayjs(customStartDate).toISOString();
+                const start = dayjs(customStartDate).format('YYYY-MM-DD');
                 const days = dayjs(endDate).diff(dayjs(startDate), 'day');
                 return await fetchDailyAggregates(start, days, option);
             }
         }
 
         const response = await axios.get(url, { params: { type: option } });
-        const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD HH:mm');
-        const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD HH:mm');
+        const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD HH:mm:ss');
+        const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD HH:mm:ss');
         return { data: response.data, error: null, isAggregated: false, aggregationType: null, timeSpan: `${formattedStartDate} to ${formattedEndDate}` };
     } catch (error) {
         console.error('Error fetching sensor data:', error);
-        const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD HH:mm');
-        const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD HH:mm');
+        const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD HH:mm:ss');
+        const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD HH:mm:ss');
         return { data: [], error: 'Error fetching sensor data', isAggregated: false, aggregationType: null, timeSpan: `${formattedStartDate} to ${formattedEndDate}` };
     }
 };

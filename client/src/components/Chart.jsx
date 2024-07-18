@@ -3,6 +3,10 @@ import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 import { Paper, Box, Alert } from '@mui/material';
 import 'chartjs-adapter-date-fns';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 const Chart = ({ data, selectedOption, isAggregated, aggregationType, error, granularity }) => {
   const labels = {
@@ -48,11 +52,11 @@ const Chart = ({ data, selectedOption, isAggregated, aggregationType, error, gra
   };
 
   const chartData = {
-    labels: data.map(entry => entry.timestamp),
+    labels: data.map(entry => dayjs(entry.timestamp).utc().local().format()), // Convert to local time
     datasets: [
       {
         label: labels[selectedOption],
-        data: data.map((entry) => entry[selectedOption]),
+        data: data.map(entry => entry[selectedOption]),
         fill: false,
         backgroundColor: colors[selectedOption],
         borderColor: colors[selectedOption],
