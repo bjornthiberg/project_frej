@@ -11,7 +11,7 @@ const ChartFilterBar = ({
     handleTimeRangeChange,
 }) => {
     return (
-        <Box display="flex" alignItems="center" justifyContent="space-between" marginBottom="8px">
+        <Box display="flex" alignItems="center" justifyContent="space-between" marginBottom="8px" flexWrap="wrap">
             <DataTypePicker
                 selectedOption={selectedOption}
                 handleOptionChange={handleOptionChange}

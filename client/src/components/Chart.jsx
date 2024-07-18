@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
-import { Paper, Box, Typography, Alert } from '@mui/material';
+import { Paper, Box, Alert } from '@mui/material';
 import 'chartjs-adapter-date-fns';
 
-const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
+const Chart = ({ data, selectedOption, isAggregated, aggregationType, error, granularity }) => {
   const labels = {
     temperature: 'Temperature (°C)',
     pressure: 'Pressure (hPa)',
@@ -19,23 +19,19 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
 
   if (error) {
     return (
-      <Paper elevation={3}>
-        <Box p={2} height="400px" display="flex" justifyContent="center" alignItems="center">
-          <Typography variant="h6" color="error">
-            {error}
-          </Typography>
-        </Box>
-      </Paper>
+      <Alert severity="error">{error}</Alert>
     );
   }
 
-  if (!selectedOption || data.length === 0) {
+  if (selectedOption === '') {
     return (
-      <Paper elevation={3}>
-        <Box p={2} height="400px" display="flex" justifyContent="center" alignItems="center">
-          <Alert severity="info">No data fetched.</Alert>
-        </Box>
-      </Paper>
+      <Alert severity="info">Please select a Data Type.</Alert>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <Alert severity="info">No data available for the selected time span.</Alert>
     );
   }
 
@@ -52,7 +48,7 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
   };
 
   const chartData = {
-    labels: data.map(entry => entry.timestamp), // Use raw timestamps for Chart.js to format
+    labels: data.map(entry => entry.timestamp),
     datasets: [
       {
         label: labels[selectedOption],
@@ -68,20 +64,20 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
 
   const chartOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Allow the chart to take the full height of its container
+    maintainAspectRatio: false,
     scales: {
       x: {
         type: 'time',
         time: {
-          unit: unit[granularity], // Dynamic unit based on granularity prop
+          unit: unit[granularity],
           tooltipFormat: 'Pp',
           displayFormats: {
-            [unit[granularity]]: displayFormats[granularity], // Dynamic display format
+            [unit[granularity]]: displayFormats[granularity],
           },
         },
         title: {
           display: true,
-          text: 'Timestamp',
+          text: 'Time',
         },
       },
       y: {
@@ -102,7 +98,10 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
       },
       title: {
         display: true,
-        text: `Sensor Data (${isAggregated ? 'Aggregated' : 'Raw'})`,
+        text: `Sensor Data (${isAggregated ? `${aggregationType} average` : 'Raw'})`,
+        font: {
+          size: 18,
+        },
       },
     },
     elements: {
@@ -130,8 +129,10 @@ Chart.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
   selectedOption: PropTypes.string.isRequired,
   isAggregated: PropTypes.bool.isRequired,
+  aggregationType: PropTypes.string,
   error: PropTypes.string,
   granularity: PropTypes.string.isRequired,
+  timeSpan: PropTypes.string.isRequired,
 };
 
 export default Chart;

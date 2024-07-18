@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Container, Grid, Alert, Box } from '@mui/material';
+import { Container, Grid, Box } from '@mui/material';
 import ChartFilterBar from './ChartFilterBar';
 import Chart from './Chart';
 import CustomDatePicker from './CustomDatePicker';
@@ -21,6 +21,8 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [isAggregated, setIsAggregated] = useState(false);
   const [granularity, setGranularity] = useState('minute');
+  const [timeSpan, setTimeSpan] = useState('');
+  const [aggregationType, setAggregationType] = useState("");
 
   const options = [
     { label: 'Temperature (°C)', value: 'temperature' },
@@ -49,16 +51,12 @@ const Dashboard = () => {
       const newGranularity = determineGranularity(timeRange, start, end);
       setGranularity(newGranularity);
 
-      FetchSensorData(option, timeRange, start, end).then(({ data, error }) => {
+      FetchSensorData(option, timeRange, start, end).then(({ data, error, isAggregated, aggregationType, timeSpan }) => {
         setData(data);
         setError(error);
-
-        if (timeRange === 'custom') {
-          const diffInHours = dayjs(end).diff(dayjs(start), 'hour');
-          setIsAggregated(diffInHours >= 2);
-        } else {
-          setIsAggregated(timeRange !== 'hour');
-        }
+        setIsAggregated(isAggregated);
+        setAggregationType(aggregationType);
+        setTimeSpan(timeSpan);
       });
     }
   }, [chartConfig, customDates]);
@@ -74,11 +72,12 @@ const Dashboard = () => {
       const newGranularity = determineGranularity('custom', start, end);
       setGranularity(newGranularity);
 
-      FetchSensorData(chartConfig.option, 'custom', start, end).then(({ data, error }) => {
+      FetchSensorData(chartConfig.option, 'custom', start, end).then(({ data, error, isAggregated, aggregationType, timeSpan }) => {
         setData(data);
         setError(error);
-        const diffInHours = dayjs(end).diff(dayjs(start), 'hour');
-        setIsAggregated(diffInHours >= 2);
+        setIsAggregated(isAggregated);
+        setAggregationType(aggregationType);
+        setTimeSpan(timeSpan);
       });
     }
   };
@@ -106,19 +105,15 @@ const Dashboard = () => {
           />
         </Grid>
         <Grid item xs={12}>
-          {error ? (
-            <Alert severity="error">{error}</Alert>
-          ) : !data.length ? (
-            <Alert severity="info">No data fetched.</Alert>
-          ) : (
-            <Chart
-              data={data}
-              selectedOption={chartConfig.option}
-              isAggregated={isAggregated}
-              error={error}
-              granularity={granularity}
-            />
-          )}
+          <Chart
+            data={data}
+            selectedOption={chartConfig.option}
+            isAggregated={isAggregated}
+            aggregationType={aggregationType}
+            error={error}
+            granularity={granularity}
+            timeSpan={timeSpan}
+          />
         </Grid>
         <Grid item xs={12}>
           {chartConfig.timeRange === 'custom' && (

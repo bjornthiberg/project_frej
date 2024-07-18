@@ -27,11 +27,11 @@ const fetchHourlyAggregatesLast24Hours = async (date, option) => {
             }
         } catch (error) {
             console.error('Error fetching hourly aggregate:', error);
-            return { data: [], error: 'Error fetching hourly aggregate data' };
+            return { data: [], error: 'Error fetching hourly aggregate data', isAggregated: true, aggregationType: 'hourly', timeSpan: 'last 24 hours' };
         }
         currentDate = currentDate.add(1, 'hour');
     }
-    return { data: mapAggregateData(hourlyData, option), error: null };
+    return { data: mapAggregateData(hourlyData, option), error: null, isAggregated: true, aggregationType: 'hourly', timeSpan: 'last 24 hours' };
 };
 
 const fetchHourlyAggregates = async (startDate, endDate, option) => {
@@ -50,15 +50,20 @@ const fetchHourlyAggregates = async (startDate, endDate, option) => {
             }
         } catch (error) {
             console.error('Error fetching hourly aggregate:', error);
-            return { data: [], error: 'Error fetching hourly aggregate data' };
+            const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD HH:mm');
+            const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD HH:mm');
+            return { data: [], error: 'Error fetching hourly aggregate data', isAggregated: true, aggregationType: 'hourly', timeSpan: `${formattedStartDate} to ${formattedEndDate}` };
         }
         currentDate = currentDate.add(1, 'hour');
     }
-    return { data: mapAggregateData(hourlyData, option), error: null };
+    const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD HH:mm');
+    const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD HH:mm');
+    return { data: mapAggregateData(hourlyData, option), error: null, isAggregated: true, aggregationType: 'hourly', timeSpan: `${formattedStartDate} to ${formattedEndDate}` };
 };
 
 const fetchDailyAggregates = async (startDate, nDays, option) => {
     const dailyData = [];
+    const endDate = dayjs(startDate).add(nDays, 'day').format('YYYY-MM-DD'); // Define endDate here
     for (let day = 0; day < nDays; day++) {
         const date = dayjs(startDate).add(day, 'day').format('YYYY-MM-DD');
         const url = `${baseUrl}/sensorData/aggregate/daily/${date}`;
@@ -69,10 +74,14 @@ const fetchDailyAggregates = async (startDate, nDays, option) => {
             }
         } catch (error) {
             console.error('Error fetching daily aggregate:', error);
-            return { data: [], error: 'Error fetching daily aggregate data' };
+            const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD');
+            const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD');
+            return { data: [], error: 'Error fetching daily aggregate data', isAggregated: true, aggregationType: 'daily', timeSpan: `${formattedStartDate} to ${formattedEndDate}` };
         }
     }
-    return { data: mapAggregateData(dailyData, option), error: null };
+    const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD');
+    const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD');
+    return { data: mapAggregateData(dailyData, option), error: null, isAggregated: true, aggregationType: 'daily', timeSpan: `${formattedStartDate} to ${formattedEndDate}` };
 };
 
 const FetchSensorData = async (option, timeRange, customStartDate, customEndDate) => {
@@ -82,18 +91,19 @@ const FetchSensorData = async (option, timeRange, customStartDate, customEndDate
 
     try {
         if (timeRange === 'hour') {
-            startDate = dayjs().subtract(1, 'hour').format('YYYY-MM-DDTHH:mm');
-            endDate = dayjs().format('YYYY-MM-DDTHH:mm');
+            startDate = dayjs().subtract(1, 'hour').toISOString();
+            endDate = dayjs().toISOString();
             url = `${baseUrl}/sensorData/date-range/${startDate}/${endDate}`;
         } else if (timeRange === 'day') {
             const date = dayjs().format('YYYY-MM-DDTHH:00');
             return await fetchHourlyAggregatesLast24Hours(date, option);
         } else if (timeRange === 'week') {
-            const start = dayjs().subtract(1, 'week').format('YYYY-MM-DD');
-            return await fetchDailyAggregates(start, 7, option);
+            startDate = dayjs().subtract(1, 'week').toISOString();
+            endDate = dayjs().toISOString();
+            return await fetchDailyAggregates(startDate, 7, option);
         } else if (timeRange === 'custom' && customStartDate && customEndDate) {
-            startDate = dayjs(customStartDate).format('YYYY-MM-DDTHH:mm');
-            endDate = dayjs(customEndDate).format('YYYY-MM-DDTHH:mm');
+            startDate = dayjs(customStartDate).toISOString();
+            endDate = dayjs(customEndDate).toISOString();
             const timeRangeSize = dayjs(endDate).diff(dayjs(startDate), 'hours');
 
             if (timeRangeSize <= 2) {
@@ -101,17 +111,21 @@ const FetchSensorData = async (option, timeRange, customStartDate, customEndDate
             } else if (timeRangeSize <= 24 * 7) {
                 return await fetchHourlyAggregates(startDate, endDate, option);
             } else {
-                const start = dayjs(customStartDate).format('YYYY-MM-DD');
+                const start = dayjs(customStartDate).toISOString();
                 const days = dayjs(endDate).diff(dayjs(startDate), 'day');
                 return await fetchDailyAggregates(start, days, option);
             }
         }
 
         const response = await axios.get(url, { params: { type: option } });
-        return { data: response.data, error: null };
+        const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD HH:mm');
+        const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD HH:mm');
+        return { data: response.data, error: null, isAggregated: false, aggregationType: null, timeSpan: `${formattedStartDate} to ${formattedEndDate}` };
     } catch (error) {
         console.error('Error fetching sensor data:', error);
-        return { data: [], error: 'Error fetching sensor data' };
+        const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD HH:mm');
+        const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD HH:mm');
+        return { data: [], error: 'Error fetching sensor data', isAggregated: false, aggregationType: null, timeSpan: `${formattedStartDate} to ${formattedEndDate}` };
     }
 };
 
