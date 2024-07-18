@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Container, Grid, Alert, Box } from '@mui/material';
+import { Container, Grid, Box } from '@mui/material';
 import ChartFilterBar from './ChartFilterBar';
 import Chart from './Chart';
 import CustomDatePicker from './CustomDatePicker';
@@ -106,19 +106,13 @@ const Dashboard = () => {
           />
         </Grid>
         <Grid item xs={12}>
-          {error ? (
-            <Alert severity="error">{error}</Alert>
-          ) : !data.length ? (
-            <Alert severity="info">No data fetched.</Alert>
-          ) : (
-            <Chart
-              data={data}
-              selectedOption={chartConfig.option}
-              isAggregated={isAggregated}
-              error={error}
-              granularity={granularity}
-            />
-          )}
+          <Chart
+            data={data}
+            selectedOption={chartConfig.option}
+            isAggregated={isAggregated}
+            error={error}
+            granularity={granularity}
+          />
         </Grid>
         <Grid item xs={12}>
           {chartConfig.timeRange === 'custom' && (

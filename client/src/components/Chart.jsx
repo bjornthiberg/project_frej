@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
-import { Paper, Box, Typography, Alert } from '@mui/material';
+import { Paper, Box, Alert } from '@mui/material';
 import 'chartjs-adapter-date-fns';
 
 const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
@@ -19,23 +19,19 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
 
   if (error) {
     return (
-      <Paper elevation={3}>
-        <Box p={2} height="400px" display="flex" justifyContent="center" alignItems="center">
-          <Typography variant="h6" color="error">
-            {error}
-          </Typography>
-        </Box>
-      </Paper>
+      <Alert severity="error">{error}</Alert>
     );
   }
 
-  if (!selectedOption || data.length === 0) {
+  if (selectedOption == '') {
     return (
-      <Paper elevation={3}>
-        <Box p={2} height="400px" display="flex" justifyContent="center" alignItems="center">
-          <Alert severity="info">No data fetched.</Alert>
-        </Box>
-      </Paper>
+      <Alert severity="info">Please select a Data Type.</Alert>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <Alert severity="info">No data available for the selected time span.</Alert>
     );
   }
 
