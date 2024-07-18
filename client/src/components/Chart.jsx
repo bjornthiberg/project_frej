@@ -4,7 +4,7 @@ import 'chart.js/auto';
 import { Paper, Box, Alert } from '@mui/material';
 import 'chartjs-adapter-date-fns';
 
-const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
+const Chart = ({ data, selectedOption, isAggregated, error, granularity, timeSpan }) => {
   const labels = {
     temperature: 'Temperature (°C)',
     pressure: 'Pressure (hPa)',
@@ -98,7 +98,7 @@ const Chart = ({ data, selectedOption, isAggregated, error, granularity }) => {
       },
       title: {
         display: true,
-        text: `Sensor Data (${isAggregated ? 'Aggregated' : 'Raw'})`,
+        text: `Sensor Data (${isAggregated ? 'Average' : 'Raw'}) for ${timeSpan}`,
       },
     },
     elements: {
@@ -128,6 +128,7 @@ Chart.propTypes = {
   isAggregated: PropTypes.bool.isRequired,
   error: PropTypes.string,
   granularity: PropTypes.string.isRequired,
+  timeSpan: PropTypes.string.isRequired,
 };
 
 export default Chart;

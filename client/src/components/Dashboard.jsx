@@ -21,6 +21,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [isAggregated, setIsAggregated] = useState(false);
   const [granularity, setGranularity] = useState('minute');
+  const [timeSpan, setTimeSpan] = useState('');
 
   const options = [
     { label: 'Temperature (°C)', value: 'temperature' },
@@ -49,16 +50,11 @@ const Dashboard = () => {
       const newGranularity = determineGranularity(timeRange, start, end);
       setGranularity(newGranularity);
 
-      FetchSensorData(option, timeRange, start, end).then(({ data, error }) => {
+      FetchSensorData(option, timeRange, start, end).then(({ data, error, isAggregated, timeSpan }) => {
         setData(data);
         setError(error);
-
-        if (timeRange === 'custom') {
-          const diffInHours = dayjs(end).diff(dayjs(start), 'hour');
-          setIsAggregated(diffInHours >= 2);
-        } else {
-          setIsAggregated(timeRange !== 'hour');
-        }
+        setIsAggregated(isAggregated);
+        setTimeSpan(timeSpan);
       });
     }
   }, [chartConfig, customDates]);
@@ -74,11 +70,11 @@ const Dashboard = () => {
       const newGranularity = determineGranularity('custom', start, end);
       setGranularity(newGranularity);
 
-      FetchSensorData(chartConfig.option, 'custom', start, end).then(({ data, error }) => {
+      FetchSensorData(chartConfig.option, 'custom', start, end).then(({ data, error, isAggregated, timeSpan }) => {
         setData(data);
         setError(error);
-        const diffInHours = dayjs(end).diff(dayjs(start), 'hour');
-        setIsAggregated(diffInHours >= 2);
+        setIsAggregated(isAggregated);
+        setTimeSpan(timeSpan);
       });
     }
   };
@@ -112,6 +108,7 @@ const Dashboard = () => {
             isAggregated={isAggregated}
             error={error}
             granularity={granularity}
+            timeSpan={timeSpan}
           />
         </Grid>
         <Grid item xs={12}>
