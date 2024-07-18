@@ -1,23 +1,25 @@
 import PropTypes from 'prop-types';
-import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, Tooltip } from '@mui/material';
 
 const DataTypePicker = ({ selectedOption, handleOptionChange, options }) => {
     return (
-        <FormControl variant="outlined" size="small" style={{ minWidth: 120, marginRight: '20px' }}>
-            <InputLabel id="chart-select-label">Data Type</InputLabel>
-            <Select
-                labelId="chart-select-label"
-                value={selectedOption}
-                onChange={(e) => handleOptionChange(e.target.value)}
-                label="Data Type"
-            >
-                {options.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                    </MenuItem>
-                ))}
-            </Select>
-        </FormControl>
+        <Tooltip title="Select a data type to view" placement="top">
+            <FormControl variant="outlined" size="medium" style={{ minWidth: 120 }}>
+                <InputLabel id="chart-select-label">Data Type</InputLabel>
+                <Select
+                    labelId="chart-select-label"
+                    value={selectedOption}
+                    onChange={(e) => handleOptionChange(e.target.value)}
+                    label="Data Type"
+                >
+                    {options.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </Tooltip>
     );
 };
 

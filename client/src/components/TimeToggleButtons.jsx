@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import { ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
 
 function TimeToggleButtons({ selectedTimeRange, onTimeRangeChange }) {
     const handleRangeChange = (event, newRange) => {
@@ -16,18 +15,26 @@ function TimeToggleButtons({ selectedTimeRange, onTimeRangeChange }) {
             onChange={handleRangeChange}
             aria-label="time range"
         >
-            <ToggleButton value="custom" aria-label="custom" variant="outlined">
-                Custom
-            </ToggleButton>
-            <ToggleButton value="hour" aria-label="hour" variant="outlined">
-                Hour
-            </ToggleButton>
-            <ToggleButton value="day" aria-label="day" variant="outlined">
-                Day
-            </ToggleButton>
-            <ToggleButton value="week" aria-label="week" variant="outlined">
-                Week
-            </ToggleButton>
+            <Tooltip title="Select a custom date range">
+                <ToggleButton value="custom" aria-label="custom" variant="outlined">
+                    Custom
+                </ToggleButton>
+            </Tooltip>
+            <Tooltip title="View data from the last hour">
+                <ToggleButton value="hour" aria-label="hour" variant="outlined">
+                    Hour
+                </ToggleButton>
+            </Tooltip>
+            <Tooltip title="View data from the last 24 hours">
+                <ToggleButton value="day" aria-label="day" variant="outlined">
+                    Day
+                </ToggleButton>
+            </Tooltip>
+            <Tooltip title="View data from the last 7 days">
+                <ToggleButton value="week" aria-label="week" variant="outlined">
+                    Week
+                </ToggleButton>
+            </Tooltip>
         </ToggleButtonGroup>
     );
 }
