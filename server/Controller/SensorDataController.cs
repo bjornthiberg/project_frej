@@ -24,9 +24,6 @@ public class SensorDataController(ISensorDataRepository sensorDataRepository, IL
             Pressure = sensorReadingReq.Pressure,
             Temperature = sensorReadingReq.Temperature,
             Humidity = sensorReadingReq.Humidity,
-            Lux = sensorReadingReq.Lux,
-            Uvs = sensorReadingReq.Uvs,
-            Gas = sensorReadingReq.Gas,
             Timestamp = sensorReadingReq.Timestamp
         };
 
@@ -51,9 +48,6 @@ public class SensorDataController(ISensorDataRepository sensorDataRepository, IL
             Pressure = sr.Pressure,
             Temperature = sr.Temperature,
             Humidity = sr.Humidity,
-            Lux = sr.Lux,
-            Uvs = sr.Uvs,
-            Gas = sr.Gas,
             Timestamp = sr.Timestamp
         });
 
@@ -195,9 +189,6 @@ public class SensorDataController(ISensorDataRepository sensorDataRepository, IL
             Pressure = sensorReadingReq.Pressure,
             Temperature = sensorReadingReq.Temperature,
             Humidity = sensorReadingReq.Humidity,
-            Lux = sensorReadingReq.Lux,
-            Uvs = sensorReadingReq.Uvs,
-            Gas = sensorReadingReq.Gas,
             Timestamp = sensorReadingReq.Timestamp
         };
 

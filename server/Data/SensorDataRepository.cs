@@ -87,9 +87,6 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
             existingSensorReading.Pressure = sensorReading.Pressure;
             existingSensorReading.Temperature = sensorReading.Temperature;
             existingSensorReading.Humidity = sensorReading.Humidity;
-            existingSensorReading.Lux = sensorReading.Lux;
-            existingSensorReading.Uvs = sensorReading.Uvs;
-            existingSensorReading.Gas = sensorReading.Gas;
             existingSensorReading.Timestamp = sensorReading.Timestamp;
 
             await context.SaveChangesAsync();

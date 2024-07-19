@@ -33,8 +33,8 @@ namespace project_frej.Tests.Services
         {
             var date = new DateTime(1998, 7, 16);
             _context.SensorReadings.AddRange(
-                new SensorReading { Pressure = 100, Temperature = 20, Humidity = 50, Lux = 300, Uvs = 1, Gas = 10, Timestamp = date.AddHours(1) },
-                new SensorReading { Pressure = 200, Temperature = 22, Humidity = 55, Lux = 320, Uvs = 3, Gas = 12, Timestamp = date.AddHours(2) }
+                new SensorReading { Pressure = 100, Temperature = 20, Humidity = 50, Timestamp = date.AddHours(1) },
+                new SensorReading { Pressure = 200, Temperature = 22, Humidity = 55, Timestamp = date.AddHours(2) }
             );
 
             await _context.SaveChangesAsync();
@@ -64,8 +64,8 @@ namespace project_frej.Tests.Services
         {
             var date = new DateTime(1998, 7, 16);
             _context.SensorReadings.AddRange(
-                new SensorReading { Pressure = 100, Temperature = 20, Humidity = 50, Lux = 300, Uvs = 1, Gas = 10, Timestamp = date.AddHours(1) },
-                new SensorReading { Pressure = 200, Temperature = 22, Humidity = 55, Lux = 320, Uvs = 3, Gas = 12, Timestamp = date.AddDays(1) }
+                new SensorReading { Pressure = 100, Temperature = 20, Humidity = 50, Timestamp = date.AddHours(1) },
+                new SensorReading { Pressure = 200, Temperature = 22, Humidity = 55, Timestamp = date.AddDays(1) }
             );
 
             await _context.SaveChangesAsync();
@@ -84,8 +84,8 @@ namespace project_frej.Tests.Services
         {
             var date = new DateTime(1998, 7, 16);
             _context.SensorReadings.AddRange(
-                new SensorReading { Pressure = 100, Temperature = 20, Humidity = 50, Lux = 300, Uvs = 1, Gas = 10, Timestamp = date.AddHours(1) },
-                new SensorReading { Pressure = 200, Temperature = 22, Humidity = 55, Lux = 320, Uvs = 3, Gas = 12, Timestamp = date.AddHours(1) }
+                new SensorReading { Pressure = 100, Temperature = 20, Humidity = 50, Timestamp = date.AddHours(1) },
+                new SensorReading { Pressure = 200, Temperature = 22, Humidity = 55, Timestamp = date.AddHours(1) }
             );
 
             await _context.SaveChangesAsync();
@@ -115,8 +115,8 @@ namespace project_frej.Tests.Services
         {
             var date = new DateTime(1998, 7, 16);
             _context.SensorReadings.AddRange(
-                new SensorReading { Pressure = 100, Temperature = 20, Humidity = 50, Lux = 300, Uvs = 1, Gas = 10, Timestamp = date.AddHours(1) },
-                new SensorReading { Pressure = 200, Temperature = 22, Humidity = 55, Lux = 320, Uvs = 3, Gas = 12, Timestamp = date.AddHours(2) }
+                new SensorReading { Pressure = 100, Temperature = 20, Humidity = 50, Timestamp = date.AddHours(1) },
+                new SensorReading { Pressure = 200, Temperature = 22, Humidity = 55, Timestamp = date.AddHours(2) }
             );
 
             await _context.SaveChangesAsync();

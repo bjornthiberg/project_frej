@@ -32,15 +32,6 @@ namespace project_frej.Services
                     AvgPressure = readings.Average(r => r.Pressure),
                     MinPressure = readings.Min(r => r.Pressure),
                     MaxPressure = readings.Max(r => r.Pressure),
-                    AvgLux = readings.Average(r => r.Lux),
-                    MinLux = readings.Min(r => r.Lux),
-                    MaxLux = readings.Max(r => r.Lux),
-                    AvgUvs = readings.Average(r => r.Uvs),
-                    MinUvs = readings.Min(r => r.Uvs),
-                    MaxUvs = readings.Max(r => r.Uvs),
-                    AvgGas = readings.Average(r => r.Gas),
-                    MinGas = readings.Min(r => r.Gas),
-                    MaxGas = readings.Max(r => r.Gas)
                 };
 
                 _context.SensorReadingsDaily.Add(dailyAggregate);
@@ -68,15 +59,6 @@ namespace project_frej.Services
                     AvgPressure = readings.Average(r => r.Pressure),
                     MinPressure = readings.Min(r => r.Pressure),
                     MaxPressure = readings.Max(r => r.Pressure),
-                    AvgLux = readings.Average(r => r.Lux),
-                    MinLux = readings.Min(r => r.Lux),
-                    MaxLux = readings.Max(r => r.Lux),
-                    AvgUvs = readings.Average(r => r.Uvs),
-                    MinUvs = readings.Min(r => r.Uvs),
-                    MaxUvs = readings.Max(r => r.Uvs),
-                    AvgGas = readings.Average(r => r.Gas),
-                    MinGas = readings.Min(r => r.Gas),
-                    MaxGas = readings.Max(r => r.Gas)
                 };
 
                 _context.SensorReadingsHourly.Add(hourlyAggregate);

@@ -33,29 +33,5 @@ namespace project_frej.Models
         public double MinHumidity { get; set; }
         [Required]
         public double MaxHumidity { get; set; }
-
-        // Lux Aggregates
-        [Required]
-        public double AvgLux { get; set; }
-        [Required]
-        public double MinLux { get; set; }
-        [Required]
-        public double MaxLux { get; set; }
-
-        // UV Aggregates
-        [Required]
-        public double AvgUvs { get; set; }
-        [Required]
-        public double MinUvs { get; set; }
-        [Required]
-        public double MaxUvs { get; set; }
-
-        // Gas Aggregates
-        [Required]
-        public double AvgGas { get; set; }
-        [Required]
-        public double MinGas { get; set; }
-        [Required]
-        public double MaxGas { get; set; }
     }
 }

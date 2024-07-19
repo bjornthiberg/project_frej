@@ -39,17 +39,11 @@ class Environment:
             "pressure": pressure,
             "temperature": temperature,
             "humidity": humidity,
-            "lux": 0,
-            "uvs": 0,
-            "gas": 0,
             "timestamp": reading_time,
             "errors": {
                 "pressure": pressure is None,
                 "temperature": temperature is None,
                 "humidity": humidity is None,
-                "lux": False,
-                "uvs": False,
-                "gas": False,
             },
         }
 

@@ -37,9 +37,6 @@ def insert_reading(data):
             pressure=data["pressure"],
             temperature=data["temperature"],
             humidity=data["humidity"],
-            lux=data["lux"],
-            uvs=data["uvs"],
-            gas=data["gas"],
             timestamp=data["timestamp"],
         )
         logging.info("Data inserted successfully")

@@ -47,9 +47,6 @@ namespace project_frej.Tests.TestUtils
                     Pressure = 100,
                     Temperature = 20,
                     Humidity = 50,
-                    Lux = 300,
-                    Uvs = 1,
-                    Gas = 10,
                     Timestamp = new DateTime(1998, 7, 16)
                 });
 
