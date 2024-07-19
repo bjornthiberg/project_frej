@@ -1,9 +1,11 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using project_frej.Data;
 using project_frej.Models;
 using project_frej.Services;
+using Xunit;
 
 namespace project_frej.Tests.Services
 {
@@ -12,20 +14,28 @@ namespace project_frej.Tests.Services
         private SqliteConnection _connection;
         private SensorDataContext _context;
         private AggregationService _service;
+        private IServiceProvider _serviceProvider;
 
         public AggregationServiceTests()
         {
+            var serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddLogging();
+
             _connection = new SqliteConnection("DataSource=:memory:");
             _connection.Open();
 
-            var options = new DbContextOptionsBuilder<SensorDataContext>()
-                .UseSqlite(_connection)
-                .Options;
+            serviceCollection.AddDbContext<SensorDataContext>(options =>
+                options.UseSqlite(_connection));
 
-            _context = new SensorDataContext(options);
+            _serviceProvider = serviceCollection.BuildServiceProvider();
+
+            _context = _serviceProvider.GetRequiredService<SensorDataContext>();
             _context.Database.EnsureCreated();
 
-            _service = new AggregationService(_context);
+            var logger = _serviceProvider.GetRequiredService<ILogger<AggregationService>>();
+
+            _service = new AggregationService(_context, logger);
         }
 
         [Fact]
@@ -39,9 +49,9 @@ namespace project_frej.Tests.Services
 
             await _context.SaveChangesAsync();
 
-            await _service.AggregateDailyData(date);
+            await _service.AggregateDailyDataAsync(date);
 
-            var aggregate = await _context.SensorReadingsDaily.FirstOrDefaultAsync(a => a.Date == date);
+            var aggregate = await _context.SensorReadingsDaily.FirstOrDefaultAsync(a => a.Date == date.Date);
             Assert.NotNull(aggregate);
             Assert.Equal(150, aggregate.AvgPressure);
             Assert.Equal(200, aggregate.MaxPressure);
@@ -53,9 +63,9 @@ namespace project_frej.Tests.Services
         {
             var date = new DateTime(1998, 7, 16);
 
-            await _service.AggregateDailyData(date);
+            await _service.AggregateDailyDataAsync(date);
 
-            var aggregate = await _context.SensorReadingsDaily.FirstOrDefaultAsync(a => a.Date == date);
+            var aggregate = await _context.SensorReadingsDaily.FirstOrDefaultAsync(a => a.Date == date.Date);
             Assert.Null(aggregate);
         }
 
@@ -70,9 +80,9 @@ namespace project_frej.Tests.Services
 
             await _context.SaveChangesAsync();
 
-            await _service.AggregateDailyData(date);
+            await _service.AggregateDailyDataAsync(date);
 
-            var aggregate = await _context.SensorReadingsDaily.FirstOrDefaultAsync(a => a.Date == date);
+            var aggregate = await _context.SensorReadingsDaily.FirstOrDefaultAsync(a => a.Date == date.Date);
             Assert.NotNull(aggregate);
             Assert.Equal(100, aggregate.AvgPressure);
             Assert.Equal(100, aggregate.MaxPressure);
@@ -90,7 +100,7 @@ namespace project_frej.Tests.Services
 
             await _context.SaveChangesAsync();
 
-            await _service.AggregateHourlyData(date, 1);
+            await _service.AggregateHourlyDataAsync(date, 1);
 
             var aggregate = await _context.SensorReadingsHourly.FirstOrDefaultAsync(a => a.Hour == date.AddHours(1));
             Assert.NotNull(aggregate);
@@ -104,7 +114,7 @@ namespace project_frej.Tests.Services
         {
             var date = new DateTime(1998, 7, 16);
 
-            await _service.AggregateHourlyData(date, 1);
+            await _service.AggregateHourlyDataAsync(date, 1);
 
             var aggregate = await _context.SensorReadingsHourly.FirstOrDefaultAsync(a => a.Hour == date.AddHours(1));
             Assert.Null(aggregate);
@@ -121,20 +131,21 @@ namespace project_frej.Tests.Services
 
             await _context.SaveChangesAsync();
 
-            await _service.AggregateHourlyData(date, 1);
+            await _service.AggregateHourlyDataAsync(date, 1);
 
             var aggregate = await _context.SensorReadingsHourly.FirstOrDefaultAsync(a => a.Hour == date.AddHours(1));
             Assert.NotNull(aggregate);
             Assert.Equal(100, aggregate.AvgPressure);
             Assert.Equal(100, aggregate.MaxPressure);
             Assert.Equal(100, aggregate.MinPressure);
-
         }
 
         public void Dispose()
         {
             _context.Dispose();
             _connection.Dispose();
+
+            GC.SuppressFinalize(this);
         }
     }
 }
