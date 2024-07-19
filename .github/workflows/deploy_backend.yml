@@ -22,6 +22,11 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
+    - name: Install EF Core tool
+      run: |
+          dotnet tool install --global dotnet-ef
+          dotnet tool restore
+
     - name: Restore dependencies
       run: dotnet restore
       working-directory: ./server
@@ -33,6 +38,10 @@ jobs:
     - name: Test
       run: dotnet test
       working-directory: ./tests/serverTests
+
+    - name: Apply database migrations
+      run: dotnet ef database update
+      working-directory: ./server
 
     - name: Publish
       run: dotnet publish --configuration Release --output ./out
