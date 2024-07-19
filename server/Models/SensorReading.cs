@@ -17,15 +17,6 @@ namespace project_frej.Models
         public float Humidity { get; set; }
 
         [Required]
-        public float Lux { get; set; }
-
-        [Required]
-        public float Uvs { get; set; }
-
-        [Required]
-        public float Gas { get; set; }
-
-        [Required]
         public DateTime Timestamp { get; set; }
     }
 }
