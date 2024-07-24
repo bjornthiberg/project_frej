@@ -12,6 +12,8 @@ builder.Services.AddDbContext<SensorDataContext>(options =>
 
 builder.Services.AddScoped<ISensorDataRepository, SensorDataRepository>();
 
+builder.Services.AddScoped<WebSocketHandler>();
+
 builder.Services.AddScoped<AggregationService>();
 builder.Services.AddHostedService<AggregationHostedService>();
 
@@ -49,9 +51,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
+app.UseWebSockets();
 
-app.UseMiddleware<ApiKeyPostMiddleware>();
+if (app.Environment.IsProduction())
+{
+    app.UseMiddleware<ApiKeyPostMiddleware>();
+}
 
 app.UseCors("CorsPolicy");
 

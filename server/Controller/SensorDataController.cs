@@ -1,12 +1,15 @@
+using System.Net.WebSockets;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using project_frej.Data;
 using project_frej.Models;
+using project_frej.Services;
 
 namespace project_frej.Controllers;
 
 [ApiController]
 [Route("api/sensorData")]
-public class SensorDataController(ISensorDataRepository sensorDataRepository, ILogger<SensorDataController> logger) : ControllerBase
+public class SensorDataController(ISensorDataRepository sensorDataRepository, ILogger<SensorDataController> logger, WebSocketHandler webSocketHandler) : ControllerBase
 {
     [HttpGet("/")]
     public IActionResult GetRoot()
@@ -143,6 +146,12 @@ public class SensorDataController(ISensorDataRepository sensorDataRepository, IL
             logger.LogError(ex, "Error while fetching paged sensor data for page {PageNumber} and page size {PageSize}", pageNumber, pageSize);
             return Problem("Error while fetching paged sensor data", statusCode: 500);
         }
+    }
+
+    [HttpGet("websocket")]
+    public async Task GetSensorDataWebsocket()
+    {
+        await webSocketHandler.HandleWebSocketAsync(HttpContext);
     }
 
     [HttpGet("all")]
