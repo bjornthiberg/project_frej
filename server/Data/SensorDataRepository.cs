@@ -1,14 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using project_frej.Models;
+using project_frej.Services;
 
 namespace project_frej.Data;
 
-public class SensorDataRepository(SensorDataContext context) : ISensorDataRepository
+public class SensorDataRepository(SensorDataContext context, WebSocketHandler webSocketHandler) : ISensorDataRepository
 {
     public async Task<SensorReading> AddAsync(SensorReading sensorReading)
     {
         context.SensorReadings.Add(sensorReading);
         await context.SaveChangesAsync();
+
+        // Notify WebSocket clients
+        await webSocketHandler.NotifyClients(sensorReading);
+
         return sensorReading;
     }
 
@@ -16,6 +21,13 @@ public class SensorDataRepository(SensorDataContext context) : ISensorDataReposi
     {
         context.SensorReadings.AddRange(sensorReadings);
         await context.SaveChangesAsync();
+
+        // Notify WebSocket clients for each added sensor reading
+        foreach (var sensorReading in sensorReadings)
+        {
+            await webSocketHandler.NotifyClients(sensorReading);
+        }
+
         return sensorReadings;
     }
 
