@@ -96,8 +96,8 @@ public class AggregationService(SensorDataContext context, ILogger<AggregationSe
         try
         {
             var oldestReadingTimeStamp = await context.SensorReadings.MinAsync(r => r.Timestamp);
-            var lastCompletedDay = DateTime.UtcNow.Date.AddDays(-1);
-            var lastCompletedHour = DateTime.UtcNow.AddHours(-1);
+            var lastCompletedDay = DateTime.Now.Date.AddDays(-1);
+            var lastCompletedHour = DateTime.Now.AddHours(-1);
 
             for (var date = oldestReadingTimeStamp.Date; date <= lastCompletedDay; date = date.AddDays(1))
             {
