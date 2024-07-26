@@ -22,11 +22,6 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: Install EF Core tool
-      run: |
-          dotnet tool install --global dotnet-ef
-          dotnet tool restore
-
     - name: Restore dependencies
       run: dotnet restore
       working-directory: ./server
@@ -47,6 +42,18 @@ jobs:
       run: dotnet publish --configuration Release --output ./out
       working-directory: ./server
 
+    - name: Build Docker image
+      run: docker build -t ghcr.io/${{ github.repository_owner }}/frej_backend:latest ./server
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.GHCR_USERNAME }}
+        password: ${{ secrets.GHCR_TOKEN }}
+
+    - name: Push Docker image
+      run: docker push ghcr.io/${{ github.repository_owner }}/frej_backend:latest
+
     - name: Prepare SSH Key
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/private_key
@@ -59,39 +66,20 @@ jobs:
         ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
       shell: bash
 
-    - name: Create deployment directory on server
+    - name: Deploy Docker Container on Server
       run: |
-        ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'mkdir -p /var/www/project_frej_temp'
-      shell: bash
-
-    - name: Copy files to server
-      run: |
-        scp -i $HOME/private_key -r ./server/out/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/project_frej_temp
-      shell: bash
-
-    - name: Backup existing database
-      run: |
-        ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'cp /var/www/project_frej/sensor_data.db /var/www/project_frej_temp/sensor_data.db'
-      shell: bash
-
-    - name: Replace old backend with new version
-      run: |
-        ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'rm -rf /var/www/project_frej_old && mv /var/www/project_frej /var/www/project_frej_old && mv /var/www/project_frej_temp /var/www/project_frej'
-      shell: bash
-
-    - name: Restore previous appsettings.json
-      run: |
-        ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'cp /var/www/project_frej_old/appsettings.json /var/www/project_frej/appsettings.json'
-      shell: bash
-
-    - name: Give www-data ownership of directory
-      run: |
-        ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'chown -R www-data:www-data /var/www/project_frej && chmod -R 775 /var/www/project_frej'
-      shell: bash
-
-    - name: Restart backend service
-      run: |
-        ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'sudo systemctl restart project_frej.service'
+        ssh -i $HOME/private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          set -e
+          mkdir -p /var/lib/project_frej
+          docker pull ghcr.io/${GITHUB_REPOSITORY_OWNER}/frej_backend:latest
+          cp /var/lib/project_frej/sensor_data.db /var/lib/project_frej_old/sensor_data.db || true
+          docker stop frej_backend || true
+          docker rm frej_backend || true
+          docker run -d --name frej_backend --restart always -p 5000:8080 \
+          -v /var/lib/project_frej/appsettings.json:/app/appsettings.json \
+          -v /var/lib/project_frej/sensor_data.db:/app/sensor_data.db \
+          ghcr.io/${GITHUB_REPOSITORY_OWNER}/frej_backend:latest
+        EOF
       shell: bash
 
     - name: Cleanup
