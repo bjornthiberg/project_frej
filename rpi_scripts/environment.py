@@ -1,3 +1,7 @@
+"""
+Module for interfacing with the Sense HAT sensor.
+"""
+
 import time
 import datetime
 import logging
@@ -7,39 +11,45 @@ logger = logging.getLogger(__name__)
 
 
 class Environment:
+    """
+    Class to interact with the Sense HAT sensor.
+    """
+
     def __init__(self):
         self.sense = SenseHat()
 
     def get_sensor_data(self):
-        reading_time = datetime.datetime.now().isoformat()
+        """Returns sensor data as a tuple"""
+        timestamp = datetime.datetime.now().isoformat()
 
         try:
             temperature = self.sense.get_temperature()
-        except Exception as e:
-            logging.error(f"Error reading temperature: {e}")
+        except Exception as temp_error:
+            logging.error("Error reading temperature: %s", temp_error)
             temperature = None
 
         try:
             pressure = self.sense.get_pressure()
-        except Exception as e:
-            logging.error(f"Error reading pressure: {e}")
+        except Exception as pressure_error:
+            logging.error("Error reading pressure: %s", pressure_error)
             pressure = None
 
         try:
             humidity = self.sense.get_humidity()
-        except Exception as e:
-            logging.error(f"Error reading humidity: {e}")
+        except Exception as humidity_error:
+            logging.error("Error reading humidity: %s", humidity_error)
             humidity = None
 
-        return pressure, temperature, humidity, reading_time
+        return pressure, temperature, humidity, timestamp
 
-    def get_sensor_data_json(self):
-        pressure, temperature, humidity, reading_time = self.get_sensor_data()
+    def get_sensor_data_dict(self):
+        """Returns sensor data as a dictionary object"""
+        pressure, temperature, humidity, timestamp = self.get_sensor_data()
         return {
             "pressure": pressure,
             "temperature": temperature,
             "humidity": humidity,
-            "timestamp": reading_time,
+            "timestamp": timestamp,
             "errors": {
                 "pressure": pressure is None,
                 "temperature": temperature is None,
@@ -57,6 +67,6 @@ if __name__ == "__main__":
             print(data)
             time.sleep(1)
     except KeyboardInterrupt:
-        print("Terminated by user")
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
+        logging.info("Terminated by user")
+    except Exception as main_error:
+        logging.error("An error occurred: %s", main_error)

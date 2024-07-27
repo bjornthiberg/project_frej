@@ -1,14 +1,18 @@
+"""
+Main script to handle data collection, insertion, and transmission to Kafka.
+"""
+
 import sys
 import logging
 from os import getenv
-from dotenv import load_dotenv
 from time import sleep
+from dotenv import load_dotenv
 
-from rpi_scripts.collect_data import initialize_db, collect_reading, insert_reading
+from rpi_scripts.data.database_utils import initialize_db, insert_reading_into_db
 from rpi_scripts.environment import Environment
-from rpi_scripts.transmit_data import post_sensor_reading
+from rpi_scripts.transmit_data import send_to_kafka
 
-DEFAULT_SLEEP_INTERVAL = 5
+DEFAULT_GATHER_INTERVAL = 5
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -16,54 +20,58 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def main(sleep_interval):
-    """Collects and inserts reading every sleep_interval seconds.
-    Then sends to the API."""
+def main(interval):
+    """
+    Collects and inserts reading every sleep_interval seconds.
+    Then sends to Kafka Producer.
+    """
 
     initialize_db()
-    env = Environment()
+    environment = Environment()
 
     load_dotenv()
 
-    API_URL = getenv("API_URL")
-    API_PORT = getenv("API_PORT")
-    API_KEY = getenv("API_KEY")
+    kafka_broker = getenv("KAFKA_BROKER")
+    kafka_topic = getenv("KAFKA_TOPIC")
 
-    if not all([API_URL, API_PORT, API_KEY]):
-        logger.error("API_URL, API_PORT, and API_KEY must be set in the environment.")
+    if not all([kafka_broker, kafka_topic]):
+        logger.error("KAFKA_BROKER and KAFKA_TOPIC must be set in the environment.")
         sys.exit(1)
 
     while True:
         try:
-            data = collect_reading(env)
-            if data:
-                insert_reading(data)
-
-            response = post_sensor_reading(data, API_URL, API_PORT, API_KEY)
-
-            if response:
-                logger.info(f"API response: {response}")
+            sensor_reading = environment.get_sensor_data_dict()
+            if sensor_reading:
+                insert_reading_into_db(sensor_reading)
+                logger.info("Data inserted into the database")
             else:
-                logger.error("No or empty response from API")
+                logger.error("Failed to read sensor data")
 
-            sleep(sleep_interval)
+            success = send_to_kafka(sensor_reading, kafka_broker, kafka_topic)
+
+            if success:
+                logger.info("Data sent to Kafka successfully")
+            else:
+                logger.error("Failed to send data to Kafka")
+
+            sleep(interval)
 
         except KeyboardInterrupt:
             logging.info("Terminated by user")
             break
         except Exception as e:
-            logging.error(f"Error in main loop: {e}")
-            sleep(sleep_interval)
+            logging.error("Error in main loop: %s", e)
+            sleep(interval)
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        sleep_interval = DEFAULT_SLEEP_INTERVAL
+        GATHER_INTERVAL = DEFAULT_GATHER_INTERVAL
     else:
         try:
-            sleep_interval = int(sys.argv[1])
+            GATHER_INTERVAL = int(sys.argv[1])
         except ValueError:
             logging.error("Invalid sleep interval provided. Using default interval.")
-            sleep_interval = DEFAULT_SLEEP_INTERVAL
+            GATHER_INTERVAL = DEFAULT_GATHER_INTERVAL
 
-    main(sleep_interval)
+    main(GATHER_INTERVAL)
