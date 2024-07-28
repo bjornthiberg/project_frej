@@ -2,7 +2,14 @@
 Module for the sensor reading data model.
 """
 
-from peewee import Model, FloatField, DateTimeField, AutoField, DatabaseProxy
+from peewee import (
+    Model,
+    FloatField,
+    DateTimeField,
+    AutoField,
+    BooleanField,
+    DatabaseProxy,
+)
 
 db = DatabaseProxy()
 
@@ -17,6 +24,7 @@ class SensorReading(Model):
     temperature = FloatField(null=True)
     humidity = FloatField(null=True)
     timestamp = DateTimeField()
+    sent = BooleanField(default=False)
 
     class Meta:
         """
