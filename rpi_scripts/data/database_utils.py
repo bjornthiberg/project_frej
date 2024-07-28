@@ -55,7 +55,7 @@ def get_unsent_readings():
     Get all unsent readings from the database.
     """
     try:
-        return SensorReading.select().where(SensorReading.sent is False)
+        return SensorReading.select().where(SensorReading.sent == False)
     except Exception as e:
         logger.error("Error getting unsent readings: %s", e)
         raise
