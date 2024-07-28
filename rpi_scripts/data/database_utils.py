@@ -55,22 +55,24 @@ def get_unsent_readings():
     Get all unsent readings from the database.
     """
     try:
-        return SensorReading.select().where(SensorReading.sent == False)
+        return SensorReading.select().where(SensorReading.sent is False)
     except Exception as e:
         logger.error("Error getting unsent readings: %s", e)
         raise
 
 
-def set_reading_sent_status(id: int, sent_status: bool):
+def set_reading_sent_status(reading_id: int, sent_status: bool):
     """
     Update the sent status of a reading in the database.
 
     Args:
-        id (int): The ID of the reading.
+        reading_id (int): The ID of the reading.
         sent_status (bool): The new sent status.
     """
     try:
-        query = SensorReading.update(sent=sent_status).where(SensorReading.id == id)
+        query = SensorReading.update(sent=sent_status).where(
+            SensorReading.id == reading_id
+        )
         query.execute()
     except Exception as e:
         logger.error("Error updating sent status: %s", e)

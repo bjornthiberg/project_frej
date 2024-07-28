@@ -3,11 +3,11 @@ Main script to handle data collection, insertion, and transmission to the backen
 """
 
 import sys
+from os import getenv
+from threading import Thread, Lock
+from time import sleep
 import logging
 import requests
-from os import getenv
-from time import sleep
-from threading import Thread, Lock
 from dotenv import load_dotenv
 
 from rpi_scripts.data.database_utils import (
@@ -46,7 +46,7 @@ def collect_data(interval):
             sleep(interval)
 
         except KeyboardInterrupt:
-            logging.info("Terminated by user")
+            logger.info("Terminated by user")
             break
         except Exception as e:
             logger.error("Error in data collection loop: %s", e)
@@ -55,14 +55,16 @@ def collect_data(interval):
 
 def transmit_unsent_data(api_url, api_port, api_key):
     """
-    Continuously attempts to resend all unsent sensor data to the backend API with exponential backoff.
+    Continuously attempt resend of unsent sensor data, with exponential backoff.
     """
     backoff_time = 1  # Initial backoff time in seconds
 
     while True:
         try:
             with db_lock:
-                unsent_readings = get_unsent_readings()
+                unsent_readings = list(
+                    get_unsent_readings()
+                )  # Ensure it is an iterable
 
             for reading in unsent_readings:
                 data = {
@@ -76,7 +78,7 @@ def transmit_unsent_data(api_url, api_port, api_key):
                     logger.info("Data sent to API successfully")
                     with db_lock:
                         set_reading_sent_status(reading.id, True)
-                    backoff_time = 1  # Reset backoff time after a successful send
+                    backoff_time = 1  # Reset backoff time after successful send
                 else:
                     logger.error(
                         "Failed to resend data to API. Retrying in %s seconds...",
@@ -107,7 +109,7 @@ def post_sensor_reading(data, api_url, api_port, api_key):
         api_port (str): The port of the API.
         api_key (str): The API key for authentication.
     """
-    headers = {"Authorization": f"{api_key}", "Content-Type": "application/json"}
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
 
     try:
         response = requests.post(
@@ -139,27 +141,34 @@ def main(interval):
     Initializes the database and starts data collection and transmission loops.
     """
 
-    initialize_db()
-    load_dotenv()
+    try:
+        initialize_db()
+        load_dotenv()
 
-    api_url = getenv("API_URL")
-    api_port = getenv("API_PORT")
-    api_key = getenv("API_KEY")
+        api_url = getenv("API_URL")
+        api_port = getenv("API_PORT")
+        api_key = getenv("API_KEY")
 
-    if not all([api_url, api_port, api_key]):
-        logger.error("API_URL, API_PORT, or API_KEY not found in environment variables")
+        if not all([api_url, api_port, api_key]):
+            logger.error(
+                "API_URL, API_PORT, or API_KEY not found in environment variables"
+            )
+            sys.exit(1)
+
+        data_collection_thread = Thread(target=collect_data, args=(interval,))
+        data_collection_thread.start()
+
+        data_transmission_thread = Thread(
+            target=transmit_unsent_data, args=(api_url, api_port, api_key)
+        )
+        data_transmission_thread.start()
+
+        data_collection_thread.join()
+        data_transmission_thread.join()
+
+    except Exception as e:
+        logger.error("An error occurred in the main function: %s", e)
         sys.exit(1)
-
-    data_collection_thread = Thread(target=collect_data, args=(interval,))
-    data_collection_thread.start()
-
-    data_transmission_thread = Thread(
-        target=transmit_unsent_data, args=(api_url, api_port, api_key)
-    )
-    data_transmission_thread.start()
-
-    data_collection_thread.join()
-    data_transmission_thread.join()
 
 
 if __name__ == "__main__":
@@ -168,7 +177,7 @@ if __name__ == "__main__":
             int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_GATHER_INTERVAL
         )
     except ValueError:
-        logging.error("Invalid sleep interval provided. Using default interval.")
+        logger.error("Invalid gather interval provided. Using default interval.")
         GATHER_INTERVAL = DEFAULT_GATHER_INTERVAL
 
     main(GATHER_INTERVAL)
