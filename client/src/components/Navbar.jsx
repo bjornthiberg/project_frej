@@ -15,10 +15,10 @@ const Navbar = () => {
         </Link>
         <Box sx={{ textAlign: 'center' }}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Project Frej Dashboard
+            Project Frej
           </Typography>
           <Typography variant="subtitle2" sx={{ color: '#5c5c5c' }}>
-            RPi Sensor Data Monitoring
+            Sense HAT environmental data
           </Typography>
         </Box>
         <Link href="https://github.com/bjornthiberg/project_frej" target="_blank" rel="noopener" sx={{ color: 'inherit' }}>

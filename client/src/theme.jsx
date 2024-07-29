@@ -33,14 +33,6 @@ const theme = createTheme({
     },
   },
   components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          borderRadius: '8px',
-        },
-      },
-    },
     MuiPaper: {
       styleOverrides: {
         root: {
@@ -58,6 +50,20 @@ const theme = createTheme({
           borderBottom: '1px solid #D3D3D3',
           color: '#212121',
           boxShadow: 'none',
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          borderRadius: '16px',
+        },
+      },
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: '16px',
         },
       },
     },
