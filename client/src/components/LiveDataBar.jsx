@@ -50,7 +50,7 @@ const LiveDataBar = ({ data }) => {
         }
     };
 
-    const renderDataBox = (label, icon, current, avg, unit, color, bgColor) => (
+    const renderDataBox = (label, icon, current, avg, unit, diffUnit, color, bgColor) => (
         <Grid item xs={12} sm={6} md={4}>
             <Paper elevation={3} sx={{ padding: '8px 12px', background: bgColor }}>
                 <Box display="flex" alignItems="center">
@@ -59,12 +59,12 @@ const LiveDataBar = ({ data }) => {
                     </Avatar>
                     <Box textAlign="center" flex={1}>
                         <Typography variant="subtitle1" style={{ color, fontSize: '14px' }}>{label}</Typography>
-                        <Tooltip title={`Compared to average yesterday: ${avg.toFixed(2)}${unit}`}>
+                        <Tooltip title={`(Compared to yesterday's average: ${avg.toFixed(2)}${unit})`}>
                             <Box>
                                 <Typography variant="h6" className={animateClass} style={{ color, fontSize: '16px' }}>
                                     {current.toFixed(2)}{unit} ({getTrendIcon(current, avg, color)}
                                     <Typography component="span" variant="subtitle2" style={{ marginLeft: '4px', color, fontSize: '12px', lineHeight: '16px' }}>
-                                        {((current - avg) / avg * 100).toFixed(2)}%
+                                        {(current - avg).toFixed(2)} {diffUnit}
                                     </Typography>)
                                 </Typography>
                             </Box>
@@ -77,9 +77,9 @@ const LiveDataBar = ({ data }) => {
 
     return (
         <Grid container spacing={2}>
-            {renderDataBox('Temperature', <ThermostatIcon style={{ fontSize: '20px' }} />, temperature, temperatureAvg, '°C', 'rgb(255, 99, 132)', 'linear-gradient(135deg, rgba(255, 99, 132, 0.2) 0%, rgba(255, 99, 132, 0.1) 100%)')}
-            {renderDataBox('Humidity', <OpacityIcon style={{ fontSize: '20px' }} />, humidity, humidityAvg, '%', 'rgb(75, 192, 192)', 'linear-gradient(135deg, rgba(75, 192, 192, 0.2) 0%, rgba(75, 192, 192, 0.1) 100%)')}
-            {renderDataBox('Air Pressure', <SpeedIcon style={{ fontSize: '20px' }} />, pressure, pressureAvg, ' hPa', 'rgb(54, 162, 235)', 'linear-gradient(135deg, rgba(54, 162, 235, 0.2) 0%, rgba(54, 162, 235, 0.1) 100%)')}
+            {renderDataBox('Temperature', <ThermostatIcon style={{ fontSize: '20px' }} />, temperature, temperatureAvg, '°C', '°C', 'rgb(255, 99, 132)', 'linear-gradient(135deg, rgba(255, 99, 132, 0.2) 0%, rgba(255, 99, 132, 0.1) 100%)')}
+            {renderDataBox('Humidity', <OpacityIcon style={{ fontSize: '20px' }} />, humidity, humidityAvg, '%', 'pp', 'rgb(75, 192, 192)', 'linear-gradient(135deg, rgba(75, 192, 192, 0.2) 0%, rgba(75, 192, 192, 0.1) 100%)')}
+            {renderDataBox('Air Pressure', <SpeedIcon style={{ fontSize: '20px' }} />, pressure, pressureAvg, 'hPa', 'hPa', 'rgb(54, 162, 235)', 'linear-gradient(135deg, rgba(54, 162, 235, 0.2) 0%, rgba(54, 162, 235, 0.1) 100%)')}
         </Grid>
     );
 };
