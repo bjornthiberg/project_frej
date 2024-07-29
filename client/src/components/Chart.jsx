@@ -9,7 +9,7 @@ const Chart = ({ data, selectedOption, isAggregated, aggregationType, error, gra
   const labels = {
     temperature: 'Temperature (°C)',
     pressure: 'Pressure (hPa)',
-    humidity: 'Humidity (%RH)',
+    humidity: 'Humidity (%)',
   };
 
   const colors = {
