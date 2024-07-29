@@ -143,15 +143,17 @@ const Dashboard = () => {
               customEndDate={customDates.end}
               handleCustomDateChange={handleCustomDateChange}
             />
-            <Chart
-              data={data}
-              selectedOption={chartConfig.option}
-              isAggregated={isAggregated}
-              aggregationType={aggregationType}
-              error={error}
-              granularity={granularity}
-              timeSpan={timeSpan}
-            />
+            <Box mt={2}>
+              <Chart
+                data={data}
+                selectedOption={chartConfig.option}
+                isAggregated={isAggregated}
+                aggregationType={aggregationType}
+                error={error}
+                granularity={granularity}
+                timeSpan={timeSpan}
+              />
+            </Box>
             {chartConfig.timeRange === 'custom' && (
               <Box mt={2} display="flex" justifyContent="center">
                 <CustomDatePicker

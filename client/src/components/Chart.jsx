@@ -116,7 +116,7 @@ const Chart = ({ data, selectedOption, isAggregated, aggregationType, error, gra
   };
 
   return (
-    <Paper elevation={3} sx={{ height: '100%', width: '100%' }}>
+    <Paper elevation={3} sx={{ height: '100%', width: '100%', backgroundColor: 'rgb(255 255 255 / 0.7)' }}>
       <Box p={2} sx={{ height: '100%', width: '100%' }}>
         <Box sx={{ height: { xs: '300px', sm: '400px', md: '500px', lg: '600px' } }}>
           <Line data={chartData} options={chartOptions} />

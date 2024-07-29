@@ -1,11 +1,12 @@
 body {
-    margin: 0;
-    font-family: 'Public Sans', 'Helvetica', 'Arial', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-      monospace;
-  }
+  background: linear-gradient(135deg, #f5f7fa 0%, #ffffee 100%);
+  margin: 0;
+  font-family: 'Public Sans', 'Helvetica', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

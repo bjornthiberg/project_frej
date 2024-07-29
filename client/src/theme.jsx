@@ -36,20 +36,19 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          boxShadow: 'none',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.03)',
           borderRadius: '16px',
-          backgroundColor: '#FFFFFF',
-          border: '1px solid #D3D3D3',
+          border: '1px solid rgba(0, 0, 0, 0.12)',
         },
       },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: 'rgb(255 255 255 / 0.7)',
           borderBottom: '1px solid #D3D3D3',
           color: '#212121',
-          boxShadow: 'none',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.03)',
         },
       },
     },
@@ -60,10 +59,26 @@ const theme = createTheme({
         },
       },
     },
+    MuiFormControl: {
+      styleOverrides: {
+        root: {
+          borderRadius: '16px',
+        },
+      },
+    },
     MuiToggleButton: {
       styleOverrides: {
         root: {
           borderRadius: '16px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.012)',
+        },
+      },
+    },
+    MuiDateTimePicker: {
+      styleOverrides: {
+        root: {
+          borderRadius: '16px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.03)',
         },
       },
     },
