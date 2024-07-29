@@ -59,14 +59,16 @@ const LiveDataBar = ({ data }) => {
                     </Avatar>
                     <Box textAlign="center" flex={1}>
                         <Typography variant="subtitle1" style={{ color, fontSize: '14px' }}>{label}</Typography>
-                        <Typography variant="h6" className={animateClass} style={{ color, fontSize: '16px' }}>
-                            {current.toFixed(2)}{unit} ({getTrendIcon(current, avg, color)}
-                            <Tooltip title={`Compared to average yesterday: ${avg.toFixed(2)}${unit}`}>
-                                <Typography component="span" variant="subtitle2" style={{ marginLeft: '4px', color, fontSize: '12px', lineHeight: '16px' }}>
-                                    {((current - avg) / avg * 100).toFixed(2)}%
-                                </Typography>)
-                            </Tooltip>
-                        </Typography>
+                        <Tooltip title={`Compared to average yesterday: ${avg.toFixed(2)}${unit}`}>
+                            <Box>
+                                <Typography variant="h6" className={animateClass} style={{ color, fontSize: '16px' }}>
+                                    {current.toFixed(2)}{unit} ({getTrendIcon(current, avg, color)}
+                                    <Typography component="span" variant="subtitle2" style={{ marginLeft: '4px', color, fontSize: '12px', lineHeight: '16px' }}>
+                                        {((current - avg) / avg * 100).toFixed(2)}%
+                                    </Typography>)
+                                </Typography>
+                            </Box>
+                        </Tooltip>
                     </Box>
                 </Box>
             </Paper>

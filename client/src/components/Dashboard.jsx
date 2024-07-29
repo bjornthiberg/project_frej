@@ -29,9 +29,9 @@ const Dashboard = () => {
     temperature: 0,
     humidity: 0,
     pressure: 0,
-    temperatureAvg: 0,
-    humidityAvg: 0,
-    pressureAvg: 0,
+    temperatureAvg: 1,
+    humidityAvg: 1,
+    pressureAvg: 1,
   });
 
   const options = [
@@ -127,7 +127,7 @@ const Dashboard = () => {
 
   return (
     <Container>
-      <Grid container spacing={3} style={{ marginTop: 20 }}>
+      <Grid container spacing={3}>
         <Grid item xs={12}>
           <LiveDataBar data={liveData} />
         </Grid>

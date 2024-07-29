@@ -4,14 +4,14 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import Box from '@mui/material/Box';
-import Logo from '../assets/images/header.png';
+import HomeLogo from '@mui/icons-material/Home';
 
 const Navbar = () => {
   return (
     <AppBar position="static" sx={{ borderRadius: 0 }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Link href="/" sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-          <Box component="img" src={Logo} alt="Logo" sx={{ height: 40 }} />
+          <HomeLogo sx={{ fontSize: 30 }} />
         </Link>
         <Box sx={{ textAlign: 'center' }}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
