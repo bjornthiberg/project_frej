@@ -1,7 +1,7 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 
-const baseUrl = "https://frejapi.thiberg.dev/api";
+const baseUrl = "https://homefrejapi.thiberg.dev/api";
 
 const fetchDailyAverage = async (date) => {
     const formattedDate = dayjs(date).format('YYYY-MM-DD');
