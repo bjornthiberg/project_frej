@@ -53,6 +53,14 @@ jobs:
     - name: Push Docker image
       run: docker push ghcr.io/${{ github.repository_owner }}/frej_backend:latest
 
+    - name: Setup WireGuard
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wireguard
+        echo "${{ secrets.WG_CLIENT_CONF }}" | sudo tee /etc/wireguard/wg0.conf
+        sudo wg-quick up wg0
+      shell: bash
+
     - name: Prepare SSH Key
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/private_key
@@ -79,6 +87,10 @@ jobs:
           -v /var/lib/project_frej/sensor_data.db:/app/sensor_data.db \
           ghcr.io/${{ github.repository_owner }}/frej_backend:latest
         EOF
+      shell: bash
+
+    - name: Cleanup WireGuard
+      run: sudo wg-quick down wg0
       shell: bash
 
     - name: Cleanup

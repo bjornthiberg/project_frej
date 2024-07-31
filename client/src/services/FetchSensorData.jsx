@@ -1,7 +1,7 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 
-const baseUrl = "https://frejapi.thiberg.dev/api";
+const baseUrl = "https://homefrejapi.thiberg.dev/api";
 
 const mapAggregateData = (data, option) => {
     const avgKey = `avg${option.charAt(0).toUpperCase() + option.slice(1)}`;
