@@ -26,12 +26,12 @@ const Dashboard = () => {
   const [timeSpan, setTimeSpan] = useState('');
   const [aggregationType, setAggregationType] = useState("");
   const [liveData, setLiveData] = useState({
-    temperature: 0,
-    humidity: 0,
-    pressure: 0,
-    temperatureAvg: 1,
-    humidityAvg: 1,
-    pressureAvg: 1,
+    temperature: null,
+    humidity: null,
+    pressure: null,
+    temperatureAvg: null,
+    humidityAvg: null,
+    pressureAvg: null,
   });
 
   const options = [
