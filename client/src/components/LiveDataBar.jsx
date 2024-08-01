@@ -26,7 +26,7 @@ const animationClass = css`
   animation: ${expandContractAnimation} 0.5s ease-in-out;
 `;
 
-const LiveDataBar = ({ data }) => {
+const LiveDataBar = ({ data = {} }) => {
     const { temperature, humidity, pressure, temperatureAvg, humidityAvg, pressureAvg } = data;
 
     const [animateClass, setAnimateClass] = useState('');
@@ -59,13 +59,18 @@ const LiveDataBar = ({ data }) => {
                     </Avatar>
                     <Box textAlign="center" flex={1}>
                         <Typography variant="subtitle1" style={{ color, fontSize: '14px' }}>{label}</Typography>
-                        <Tooltip title={`(Compared to yesterday's average: ${avg.toFixed(2)}${unit})`}>
+                        <Tooltip title={avg !== null ? `(Compared to yesterday's average: ${avg.toFixed(2)}${unit})` : 'No average data available'}>
                             <Box>
                                 <Typography variant="h6" className={animateClass} style={{ color, fontSize: '16px' }}>
-                                    {current.toFixed(2)}{unit} ({getTrendIcon(current, avg, color)}
-                                    <Typography component="span" variant="subtitle2" style={{ marginLeft: '4px', color, fontSize: '12px', lineHeight: '16px' }}>
-                                        {(current - avg).toFixed(2)} {diffUnit}
-                                    </Typography>)
+                                    {current !== null ? `${current.toFixed(2)}${unit}` : '-'}
+                                    {current !== null && avg !== null && (
+                                        <>
+                                            ({getTrendIcon(current, avg, color)}
+                                            <Typography component="span" variant="subtitle2" style={{ marginLeft: '4px', color, fontSize: '12px', lineHeight: '16px' }}>
+                                                {(current - avg).toFixed(2)} {diffUnit}
+                                            </Typography>)
+                                        </>
+                                    )}
                                 </Typography>
                             </Box>
                         </Tooltip>
@@ -77,9 +82,9 @@ const LiveDataBar = ({ data }) => {
 
     return (
         <Grid container spacing={2}>
-            {renderDataBox('Temperature', <ThermostatIcon style={{ fontSize: '20px' }} />, temperature, temperatureAvg, '°C', '°C', 'rgb(255, 99, 132)', 'linear-gradient(135deg, rgba(255, 99, 132, 0.2) 0%, rgba(255, 99, 132, 0.1) 100%)')}
-            {renderDataBox('Humidity', <OpacityIcon style={{ fontSize: '20px' }} />, humidity, humidityAvg, '%', 'pp', 'rgb(75, 192, 192)', 'linear-gradient(135deg, rgba(75, 192, 192, 0.2) 0%, rgba(75, 192, 192, 0.1) 100%)')}
-            {renderDataBox('Air Pressure', <SpeedIcon style={{ fontSize: '20px' }} />, pressure, pressureAvg, 'hPa', 'hPa', 'rgb(54, 162, 235)', 'linear-gradient(135deg, rgba(54, 162, 235, 0.2) 0%, rgba(54, 162, 235, 0.1) 100%)')}
+            {renderDataBox('Temperature', <ThermostatIcon style={{ fontSize: '20px' }} />, null, temperatureAvg, '°C', '°C', 'rgb(255, 99, 132)', 'linear-gradient(135deg, rgba(255, 99, 132, 0.2) 0%, rgba(255, 99, 132, 0.1) 100%)')}
+            {renderDataBox('Humidity', <OpacityIcon style={{ fontSize: '20px' }} />, null, humidityAvg, '%', 'pp', 'rgb(75, 192, 192)', 'linear-gradient(135deg, rgba(75, 192, 192, 0.2) 0%, rgba(75, 192, 192, 0.1) 100%)')}
+            {renderDataBox('Air Pressure', <SpeedIcon style={{ fontSize: '20px' }} />, null, pressureAvg, 'hPa', 'hPa', 'rgb(54, 162, 235)', 'linear-gradient(135deg, rgba(54, 162, 235, 0.2) 0%, rgba(54, 162, 235, 0.1) 100%)')}
         </Grid>
     );
 };
@@ -88,11 +93,11 @@ export default LiveDataBar;
 
 LiveDataBar.propTypes = {
     data: PropTypes.shape({
-        temperature: PropTypes.number.isRequired,
-        humidity: PropTypes.number.isRequired,
-        pressure: PropTypes.number.isRequired,
-        temperatureAvg: PropTypes.number.isRequired,
-        humidityAvg: PropTypes.number.isRequired,
-        pressureAvg: PropTypes.number.isRequired,
-    }).isRequired,
+        temperature: PropTypes.number,
+        humidity: PropTypes.number,
+        pressure: PropTypes.number,
+        temperatureAvg: PropTypes.number,
+        humidityAvg: PropTypes.number,
+        pressureAvg: PropTypes.number,
+    }),
 };
