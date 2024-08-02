@@ -8,7 +8,7 @@ namespace project_frej.Data;
 /// Implementation of sensor data repository.
 /// Provides methods for CRUD operations and data aggregation.
 /// </summary>
-public class SensorDataRepository(SensorDataContext context, WebSocketHandler webSocketHandler) : ISensorDataRepository
+public class SensorDataRepository(SensorDataContext context, IWebSocketHandler webSocketHandler) : ISensorDataRepository
 {
     /// <inheritdoc />
     public async Task<SensorReading> AddAsync(SensorReading sensorReading)

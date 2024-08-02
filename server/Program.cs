@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using project_frej.Data;
 using project_frej.Middleware;
 using project_frej.Services;
+using System.Net.WebSockets;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +11,10 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<SensorDataContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<ISensorDataRepository, SensorDataRepository>();
+builder.Services.AddSingleton<List<WebSocket>>();
+builder.Services.AddScoped<IWebSocketHandler, WebSocketHandler>();
 
-builder.Services.AddScoped<WebSocketHandler>();
+builder.Services.AddScoped<ISensorDataRepository, SensorDataRepository>();
 
 builder.Services.AddScoped<AggregationService>();
 builder.Services.AddHostedService<AggregationHostedService>();

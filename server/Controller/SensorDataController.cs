@@ -10,7 +10,7 @@ namespace project_frej.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/sensorData")]
-public class SensorDataController(ISensorDataRepository sensorDataRepository, ILogger<SensorDataController> logger, WebSocketHandler webSocketHandler) : ControllerBase
+public class SensorDataController(ISensorDataRepository sensorDataRepository, ILogger<SensorDataController> logger, IWebSocketHandler webSocketHandler) : ControllerBase
 {
     /// <summary>
     /// Returns a simple "API for Project Frej" response for the root endpoint.
