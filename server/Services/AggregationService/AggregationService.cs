@@ -3,8 +3,15 @@ using project_frej.Data;
 using project_frej.Models;
 
 namespace project_frej.Services;
+
+/// <summary>
+/// Represents a service for aggregating sensor data.
+/// </summary>
+/// <param name="context">The sensor data context.</param>
+/// <param name="logger">The logger for the service.</param>
 public class AggregationService(SensorDataContext context, ILogger<AggregationService> logger) : IAggregationService
 {
+    /// <inheritdoc />
     public async Task AggregateHourlyDataAsync(DateTime date, int hour)
     {
         try
@@ -47,6 +54,7 @@ public class AggregationService(SensorDataContext context, ILogger<AggregationSe
         }
     }
 
+    /// <inheritdoc />
     public async Task AggregateDailyDataAsync(DateTime date)
     {
         try
@@ -89,6 +97,7 @@ public class AggregationService(SensorDataContext context, ILogger<AggregationSe
         }
     }
 
+    /// <inheritdoc />
     public async Task FillBlankAggregationsAsync()
     {
         logger.LogInformation("Received request to fill blank aggregations");

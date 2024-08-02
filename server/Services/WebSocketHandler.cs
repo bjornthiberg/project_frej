@@ -6,10 +6,19 @@ using project_frej.Models;
 
 namespace project_frej.Services;
 
+/// <summary>
+/// Handles WebSocket connections and notifications for sensor readings.
+/// </summary>
+/// <param name="logger">The logger instance for logging information and errors.</param>
 public class WebSocketHandler(ILogger<WebSocketManager> logger)
 {
     private static readonly List<WebSocket> _sockets = [];
 
+    /// <summary>
+    /// Handles an incoming WebSocket request.
+    /// </summary>
+    /// <param name="context">The HTTP context containing the WebSocket request.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task HandleWebSocketAsync(HttpContext context)
     {
         logger.LogInformation("WebSocket connection established");
@@ -18,7 +27,6 @@ public class WebSocketHandler(ILogger<WebSocketManager> logger)
             using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
             _sockets.Add(webSocket);
 
-            // Keep the connection open until the client closes it
             await KeepConnectionOpen(webSocket);
         }
         else
@@ -27,6 +35,11 @@ public class WebSocketHandler(ILogger<WebSocketManager> logger)
         }
     }
 
+    /// <summary>
+    /// Keeps the WebSocket connection open and listens for close messages.
+    /// </summary>
+    /// <param name="webSocket">The WebSocket to keep open.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     private static async Task KeepConnectionOpen(WebSocket webSocket)
     {
         var buffer = new byte[1024 * 4];
@@ -41,6 +54,11 @@ public class WebSocketHandler(ILogger<WebSocketManager> logger)
         }
     }
 
+    /// <summary>
+    /// Notifies connected WebSocket clients of a new sensor reading.
+    /// </summary>
+    /// <param name="sensorReading">The sensor reading to send to clients.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public async Task NotifyClients(SensorReading sensorReading)
     {
         logger.LogInformation("Notifying WebSocket clients of new sensor reading: {SensorReading}", sensorReading);
