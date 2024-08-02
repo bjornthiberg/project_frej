@@ -1,22 +1,39 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace project_frej.Models
+namespace project_frej.Models;
+
+/// <summary>
+/// Represents a sensor reading.
+/// </summary>
+public class SensorReading
 {
-    public class SensorReading
-    {
-        [Key]
-        public int Id { get; set; }  // Primary key
+    /// <summary>
+    /// Gets or sets the unique identifier for the sensor reading.
+    /// </summary>
+    [Key]
+    public int Id { get; set; }  // Primary key
 
-        [Required]
-        public float Pressure { get; set; }
+    /// <summary>
+    /// Gets or sets the pressure value of the sensor reading.
+    /// </summary>
+    [Required]
+    public float Pressure { get; set; }
 
-        [Required]
-        public float Temperature { get; set; }
+    /// <summary>
+    /// Gets or sets the temperature value of the sensor reading.
+    /// </summary>
+    [Required]
+    public float Temperature { get; set; }
 
-        [Required]
-        public float Humidity { get; set; }
+    /// <summary>
+    /// Gets or sets the humidity value of the sensor reading.
+    /// </summary>
+    [Required]
+    public float Humidity { get; set; }
 
-        [Required]
-        public DateTime Timestamp { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the timestamp when the sensor reading was recorded.
+    /// </summary>
+    [Required]
+    public DateTime Timestamp { get; set; }
 }

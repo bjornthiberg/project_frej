@@ -4,8 +4,13 @@ using project_frej.Services;
 
 namespace project_frej.Data;
 
+/// <summary>
+/// Implementation of sensor data repository.
+/// Provides methods for CRUD operations and data aggregation.
+/// </summary>
 public class SensorDataRepository(SensorDataContext context, WebSocketHandler webSocketHandler) : ISensorDataRepository
 {
+    /// <inheritdoc />
     public async Task<SensorReading> AddAsync(SensorReading sensorReading)
     {
         context.SensorReadings.Add(sensorReading);
@@ -17,6 +22,7 @@ public class SensorDataRepository(SensorDataContext context, WebSocketHandler we
         return sensorReading;
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<SensorReading>> AddBulkAsync(IEnumerable<SensorReading> sensorReadings)
     {
         context.SensorReadings.AddRange(sensorReadings);
@@ -31,11 +37,13 @@ public class SensorDataRepository(SensorDataContext context, WebSocketHandler we
         return sensorReadings;
     }
 
+    /// <inheritdoc />
     public async Task<SensorReading?> GetByIdAsync(int id)
     {
         return await context.SensorReadings.FindAsync(id);
     }
 
+    /// <inheritdoc />
     public async Task<SensorReadingHourly?> GetAggregateHourlyAsync(DateTime date, int hour)
     {
         return await context.SensorReadingsHourly
@@ -44,6 +52,7 @@ public class SensorDataRepository(SensorDataContext context, WebSocketHandler we
             .FirstOrDefaultAsync();
     }
 
+    /// <inheritdoc />
     public async Task<SensorReadingDaily?> GetAggregateDailyAsync(DateTime date)
     {
         return await context.SensorReadingsDaily
@@ -52,6 +61,7 @@ public class SensorDataRepository(SensorDataContext context, WebSocketHandler we
             .FirstOrDefaultAsync();
     }
 
+    /// <inheritdoc />
     public async Task<PagedResult<SensorReading>> GetPagedAsync(int pageNumber, int pageSize)
     {
         var totalRecords = await context.SensorReadings.CountAsync();
@@ -75,6 +85,7 @@ public class SensorDataRepository(SensorDataContext context, WebSocketHandler we
         };
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<SensorReading>> GetAllAsync()
     {
         return await context.SensorReadings
@@ -82,6 +93,7 @@ public class SensorDataRepository(SensorDataContext context, WebSocketHandler we
             .ToListAsync();
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<SensorReading>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         return await context.SensorReadings
@@ -90,6 +102,7 @@ public class SensorDataRepository(SensorDataContext context, WebSocketHandler we
             .ToListAsync();
     }
 
+    /// <inheritdoc />
     public async Task<SensorReading?> UpdateByIdAsync(int id, SensorReading sensorReading)
     {
         var existingSensorReading = await context.SensorReadings.FindAsync(id);
@@ -107,6 +120,7 @@ public class SensorDataRepository(SensorDataContext context, WebSocketHandler we
         return existingSensorReading;
     }
 
+    /// <inheritdoc />
     public async Task<bool> DeleteByIdAsync(int id)
     {
         var sensorReading = await context.SensorReadings.FindAsync(id);
