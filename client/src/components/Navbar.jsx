@@ -25,7 +25,7 @@ const Navbar = () => {
             Project Frej
           </Typography>
           <Typography variant="subtitle2" sx={{ color: 'gray' }}>
-            Live RPi Sense HAT data
+            Environmental data from my apartment 
           </Typography>
         </Box>
         <Link href="https://github.com/bjornthiberg/project_frej" target="_blank" rel="noopener" sx={{ color: 'inherit' }}>
