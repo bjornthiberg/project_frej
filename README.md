@@ -18,6 +18,10 @@
 ## Description
 Project Frej is an full-stack environmental data collection and visualization system built using Python, ASP.NET Core, and React. It is designed to gather, store, and display data from a Raspberry Pi equipped with an environmental sensor HAT.
 
+<p>
+  <img src="images/dashboard.gif" alt="Dashboard gif" width="500">
+</p>
+
 The frontend is hosted on [thiberg.dev/project_frej](https://thiberg.dev/project_frej) using GitHub pages, directly from this repository. The ASP.NET Core backend is running in an LXC on my home Promxox server.
 
 Some blog entries journaling the development process can be found on my website: [thiberg.dev](https://thiberg.dev/)
