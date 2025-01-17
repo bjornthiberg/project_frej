@@ -16,7 +16,7 @@
 - [License](#license)
 
 ## Description
-Project Frej is an full-stack environmental data collection and visualization system built using Python, ASP.NET Core, and React. It is designed to gather, store, and display data from a Raspberry Pi equipped with an environmental sensor HAT.
+Project Frej is a full-stack environmental data collection and visualization system built using Python, ASP.NET Core, and React. It is designed to gather, store, and display data from a Raspberry Pi equipped with an environmental sensor HAT.
 
 <p>
   <img src="images/dashboard.gif" alt="Dashboard gif" width="500">
